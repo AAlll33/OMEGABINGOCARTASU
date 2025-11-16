@@ -3,516 +3,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Cartas de Bingo Maestro</title>
-    
-    <!-- Tailwind CSS para la interfaz (no afecta el diseño de la carta) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Librería para capturar el HTML en PNG -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    
+    <title>Generador Profesional de Cartas de Bingo</title>
     <style>
-        /* Define las fuentes necesarias */
-        @import url('https://fonts.googleapis.com/css2?family=Arial+Black:wght@900&family=Arial:wght@400;700&display=swap');
-        
+        /* Estilos CSS */
         body {
-            background-color: #2D2A2B;
             font-family: Arial, sans-serif;
-            min-height: 100vh;
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
 
-        /* --- CONFIGURACIÓN DE ALTA RESOLUCIÓN PARA LA CAPTURA (1788x2526px) --- */
-        .bingo-template {
-            position: relative;
-            width: 1788px; /* ANCHO FIJO DEL DISEÑO */
-            height: 2526px; /* ALTO FIJO DEL DISEÑO */
-            background-image: url('diseño1.png'); 
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            overflow: hidden;
-
-            /* Puedes quitar el borde de debug una vez la alineación sea perfecta */
-            /* border: 5px solid rgba(255, 255, 255, 0.1); */ 
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* Contenedor principal para las 4 cartas */
-        .bingo-grid {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-template-rows: repeat(2, 1fr);
-            
-            /* PADDING AJUSTADO AL MILÍMETRO para tu plantilla (Posicionamiento del bloque de 4 cartas) */
-            padding: 24.2% 8.5% 1.5% 8.5%; 
-            gap: 2%; 
-        }
-        
-        /* Contenedor de cada carta individual */
-        .bingo-card-wrapper {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        /* Cuadrícula de 5x5 para los números de la carta */
-        .card-cells-grid {
-            width: 100%;
-            height: 100%;
-            
-            /* AJUSTE CLAVE PARA LA ALINEACIÓN DEFINITIVA DE LOS NÚMEROS (Cuadros Blancos) */
-            /* Controla el espacio entre el borde de la carta y el inicio de la cuadrícula de números */
-            padding-top: 13.5%; 
-            padding-bottom: 8.5%; 
-            padding-left: 2.5%; 
-            padding-right: 2.5%; 
-            
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            grid-template-rows: repeat(5, 1fr); 
-            gap: 0; 
-        }
-
-        /* Celda individual con el número de Bingo */
-        .card-cell-number {
-            display: flex;
-            /* CAMBIOS CRÍTICOS PARA CENTRADO VERTICAL/HORIZONTAL */
-            justify-content: center; /* Centrado horizontal */
-            align-items: center; /* Centrado vertical */
-            
-            /* TAMAÑO DE FUENTE Y ESTILO */
-            font-size: 80px; 
-            font-weight: bold;
-            color: #000000; 
-            font-family: Arial, sans-serif; 
-            line-height: 1; /* Asegura que la altura de línea no interfiera con el centrado */
-        }
-        
-        /* Espacio libre (sin texto visible, solo el logo) */
-        .free-space {
-            color: transparent; 
-        }
-
-        /* --- IDENTIFICADORES DE TABLA (137, 138, etc. - BARRAS SUPERIORES) --- */
-        .top-id {
-            position: absolute;
-            font-size: 100px; 
-            font-weight: 900;
-            color: #FFFFFF; 
-            font-family: 'Arial Black', sans-serif;
-            z-index: 100; 
-            text-shadow: 4px 4px 6px rgba(0,0,0,0.8); 
-            line-height: 1; 
-        }
-        
-        /* Posiciones FINAS para los IDs superiores e inferiores (Alineados en las barras) */
-        /* Manteniendo estos ajustes de la versión anterior ya que parecían estar bien */
-        .top-id.top-half.left {
-            top: 4.8%; 
-            left: 10.0%;
-        }
-        .top-id.top-half.right {
-            top: 4.8%; 
-            right: 10.0%;
-        }
-        .top-id.bottom-half.left {
-            top: 50.8%; 
-            left: 10.0%; 
-        }
-        .top-id.bottom-half.right {
-            top: 50.8%; 
-            right: 10.0%; 
-        }
-
-        /* --- ESTILOS DE LA INTERFAZ DE USUARIO Y VISTA PREVIA --- */
-        .app-container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-        .generate-button {
-            background-color: #A0388A; 
-            color: white;
-            font-weight: bold;
-            padding: 0.75rem 2rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.3s ease, transform 0.1s ease;
-        }
-        .generate-button:hover {
-            background-color: #8C2C78;
-            transform: scale(1.02);
-        }
-        .generate-button:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .temp-hide {
-            display: none !important;
-        }
-
-        /* Contenedor de salida (Vista previa) */
-        #output-container {
-            width: 100%; 
-            max-width: 1200px; 
-            margin: 0 auto;
-            padding: 1rem;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
-            gap: 2rem; 
-            justify-items: center; 
-            align-items: start;
-        }
-
-        /* Estilo para cada "tarjeta" de vista previa */
-        .bingo-table-card {
-            background-color: #fff;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            padding: 1rem;
+        h1 {
+            color: #333;
             text-align: center;
+            margin-bottom: 30px;
+        }
+
+        #controls {
             display: flex;
-            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f9f9f9;
             align-items: center;
-            width: 100%; 
-            max-width: 400px; 
-            height: auto; 
         }
 
-        /* CONTENEDOR DE ESCALADO DE VISTA PREVIA (Proporción 1:1.41) */
-        .preview-wrapper {
-            width: 100%;
-            /* Uso de padding-bottom para mantener la relación de aspecto 1788/2526 = ~70.78% */
-            padding-bottom: 141.27%; /* (2526 / 1788) * 100 = 141.27% */
+        #controls label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        #controls input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            width: 80px;
+        }
+
+        #controls button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        #controls button:hover {
+            background-color: #0056b3;
+        }
+
+        /* --- Estilo de la Página de Cartas (Esencial para la Impresión) --- */
+
+        .bingo-page {
+            /* Dimensiones de la página - Ajustar según la relación de aspecto de 1788x2526 */
+            /* Usamos una relación de aspecto fija para mantener la proporción de 1788x2526 */
+            /* Nota: Aquí establecemos el ancho a 1000px para la vista en pantalla.
+               Para impresión, el @media print se encarga de usar el tamaño completo. */
+            width: 1000px;
+            height: 1412px; /* Aprox. 1000 * (2526/1788) = 1412.19... (Proporción 1:1.41) */
             position: relative;
-            overflow: hidden;
-            background-color: #2D2A2B; /* Fondo de la plantilla */
-            border-radius: 0.5rem;
+            background-color: white;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            /* Ocultar en la vista previa y mostrar solo al generar/imprimir */
+            display: none;
+            page-break-after: always; /* Importante para la impresión */
         }
 
-        /* El elemento de alta resolución se escala dentro del contenedor proporcional */
-        .bingo-table-card .bingo-template {
+        .bingo-card-container {
+            /* La carta ocupará un cuadrante del área imprimible */
+            width: 50%;
+            height: 50%;
+            float: left;
+            position: relative;
+            /* Margen interior para asegurar que el ID no toque la carta */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .bingo-card {
+            /* --- RUTA DE TU DISEÑO PERSONALIZADO AQUÍ --- */
+            /* Reemplaza 'diseno_ejemplo.png' con el nombre de tu archivo (ej: 'diseno2.png') */
+            background-image: url('diseno_ejemplo.png'); 
+            /* ------------------------------------------------ */
+
+            background-size: cover; /* Cubre el contenedor manteniendo la proporción */
+            background-repeat: no-repeat;
+            background-position: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .card-id {
             position: absolute;
-            top: 0;
+            /* Lo colocamos fuera del área de la carta (arriba y a la izquierda de la carta) */
+            top: 0; 
             left: 0;
-            width: 1788px; 
-            height: 2526px; 
-            /* Se escala el DIV de alta resolución para que quepa en el preview-wrapper */
-            transform-origin: top left;
-            transform: scale(0.2); 
-            border: none; 
-            background-color: transparent; 
-            box-shadow: none;
-            border: none; 
+            font-size: 16px;
+            font-weight: bold;
+            color: #333; /* Color oscuro para el ID */
+            background-color: rgba(255, 255, 255, 0.8); /* Fondo claro para que se vea */
+            padding: 5px 10px;
+            border-radius: 3px;
+            z-index: 10;
         }
         
-        /* Asegurar que los tamaños de fuente originales se mantengan para que el transform scale los aplique uniformemente */
-        .bingo-table-card .card-cell-number {
-            font-size: 80px; 
+        /* Estilos específicos para la impresión */
+        @media print {
+            body {
+                background: none;
+                margin: 0;
+                padding: 0;
+            }
+            .container, #controls {
+                display: none; /* Oculta los controles y el contenedor principal en la impresión */
+            }
+            .bingo-page {
+                display: block !important;
+                /* El tamaño real de la página para impresión. Puedes ajustarlo a tu papel. 
+                   Aquí usamos A4, que es una dimensión estándar. */
+                width: 210mm; /* Ancho A4 */
+                height: 297mm; /* Alto A4 */
+                margin: 0;
+                box-shadow: none;
+                page-break-after: always;
+            }
+            .card-id {
+                font-size: 14pt; /* Tamaño de fuente más grande para impresión */
+            }
         }
-        .bingo-table-card .top-id {
-            font-size: 100px; 
-            text-shadow: 4px 4px 6px rgba(0,0,0,0.8);
-        }
-        
+
     </style>
 </head>
-<body class="bg-gray-100 font-sans p-4 min-h-screen flex flex-col items-center">
+<body>
 
-    <div class="app-container mb-8">
-        <header class="text-center py-4 mb-4">
-            <h1 class="text-2xl md:text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo MAESTRO</h1>
-            <p class="text-gray-600 mt-2 text-sm md:text-base">Alineación perfecta al centro de los cuadros blancos.</p>
-            <p class="text-red-500 font-semibold mt-4 text-xs md:text-sm">¡CRÍTICO! Asegúrate de que tu imagen de fondo se llame `diseño1.png` y esté en la misma carpeta.</p>
-        </header>
+    <div class="container">
+        <h1>Generador de Planchas de Bingo 🔢</h1>
 
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex-grow w-full">
-                <label for="numTables" class="block text-sm font-medium text-gray-700 mb-1">Número de Tablas a Generar (4 Cartas por Tabla):</label>
-                <input type="number" id="numTables" value="1" min="1" class="block w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#A0388A] focus:border-[#A0388A] text-lg" placeholder="Ej: 100 para 400 cartas">
-            </div>
-            <button id="generateBtn" class="generate-button w-full md:w-auto">
-                Generar Tablas
-            </button>
+        <div id="controls">
+            <label for="numTables">Cantidad de Tablas a Crear (Múltiplo de 4):</label>
+            <input type="number" id="numTables" value="4" min="4" step="4">
+            <button onclick="generateBingoPages()">Generar y Preparar para Descarga</button>
+            <button onclick="downloadPages()" id="downloadBtn" style="display: none;">Descargar (Imprimir a PDF)</button>
         </div>
-        <div id="messages" class="text-center text-red-600 font-semibold mt-4 hidden"></div>
+
+        <p>⚠️ **Instrucción Importante para tu diseño:**</p>
+        <p>Para cambiar el diseño de la tabla, edita la línea en la sección `<style>` de este código:</p>
+        <pre><code>background-image: url('**diseno_ejemplo.png**');</code></pre>
+        <p>Y reemplaza `diseno_ejemplo.png` por el nombre de tu archivo de diseño (ej: `diseno2.png`). Asegúrate de que tu archivo de imagen esté en la misma carpeta que este archivo HTML.</p>
+        
+        <div id="output">
+            </div>
     </div>
 
-    <h2 id="outputTitle" class="text-xl md:text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar (Vista Previa Proporcional y Alineada):</h2>
-    
-    <div id="output-container">
-        
-
-</div>
-
     <script>
-        const generatedCardHashes = new Set(); 
-        let currentCardNumber = 1; // Contador para el número de carta (1, 2, 3...)
-        let currentTableNumber = 1; // Contador para el número de tabla
-        const BASE_ID_OFFSET = 136; // El ID de la primera carta es 137, por lo que empezamos en 136.
-
-        const messagesDiv = document.getElementById('messages');
-        const outputContainer = document.getElementById('output-container');
-        const outputTitle = document.getElementById('outputTitle');
-        const generateBtn = document.getElementById('generateBtn');
-
-        /** Muestra un mensaje de error o informativo. */
-        function showMessage(msg, isError = false) {
-            messagesDiv.textContent = msg;
-            messagesDiv.classList.remove('hidden');
-            messagesDiv.className = `text-center font-semibold mt-4 ${isError ? 'text-red-600' : 'text-blue-600'}`;
-        }
-
-        /** Genera una columna de números de bingo únicos dentro de un rango. */
-        function generateColumn(min, max, count) {
-            const range = Array.from({ length: max - min + 1 }, (_, i) => min + i);
-            const selected = [];
-            while (selected.length < count) {
-                const randomIndex = Math.floor(Math.random() * range.length);
-                selected.push(range.splice(randomIndex, 1)[0]);
-            }
-            return selected.sort((a, b) => a - b);
-        }
-
-        /** Genera una carta de bingo única (5x5) y verifica su unicidad. */
-        function generateUniqueCard() {
-            let cardNumbers = [];
-            let cardHash = '';
-            const maxAttempts = 10000; 
-            let attempts = 0;
-
-            do {
-                // Generar 5 números para B (1-15), I (16-30), G (46-60), O (61-75)
-                const colB = generateColumn(1, 15, 5);
-                const colI = generateColumn(16, 30, 5);
-                const colG = generateColumn(46, 60, 5);
-                const colO = generateColumn(61, 75, 5);
-                
-                // Generar 4 números para N (31-45). El quinto es el espacio libre (0)
-                const colN_temp = generateColumn(31, 45, 4); 
-
-                cardNumbers = [];
-                let N_index = 0;
-
-                for (let i = 0; i < 5; i++) {
-                    cardNumbers.push(colB[i]);
-                    cardNumbers.push(colI[i]);
-
-                    if (i === 2) { 
-                        cardNumbers.push(0); // Espacio libre en la tercera fila (índice 2)
-                    } else {
-                        cardNumbers.push(colN_temp[N_index]);
-                        N_index++;
-                    }
-
-                    cardNumbers.push(colG[i]);
-                    cardNumbers.push(colO[i]);
-                }
-
-                // Generar el hash único con los 24 números ordenados
-                cardHash = [ ...colB, ...colI, ...colN_temp, ...colG, ...colO ].sort((a, b) => a - b).join('-');
-                
-                attempts++;
-
-                if (attempts > maxAttempts) {
-                    showMessage("Error: No se pudo generar una carta única. Intenta reducir la cantidad de tablas.", true);
-                    return null;
-                }
-
-            } while (generatedCardHashes.has(cardHash)); 
-
-            generatedCardHashes.add(cardHash);
-            return { numbers: cardNumbers, hash: cardHash };
-        }
-
-        /** Crea el HTML de los números para una sola carta de bingo. */
-        function createCardHTML(totalCardNumber, cardData) {
-            const cardNumbers = cardData.numbers;
-
-            let cellsHTML = '';
-            for (let i = 0; i < 25; i++) { 
-                const number = cardNumbers[i];
-                if (number === 0) {
-                    // Texto 'LOGO' invisible, para que ocupe el espacio y se vea la imagen de fondo.
-                    cellsHTML += `<div class="card-cell-number free-space">LOGO</div>`; 
-                } else {
-                    cellsHTML += `<div class="card-cell-number">${number}</div>`;
-                }
-            }
-
-            return `
-                <div class="bingo-card-wrapper">
-                    <div class="card-cells-grid">
-                        ${cellsHTML}
-                    </div>
-                </div>
-            `;
-        }
-
-        /** Renderiza una tabla completa (el diseño de 4 cartas con tu fondo) y su botón de descarga. */
-        function renderCardTable(cardHTMLs) {
-            const tableId = `bingo-table-${currentTableNumber}`;
-            const formattedTableNumber = String(currentTableNumber).padStart(4, '0');
-            
-            // Cálculo de los IDs superiores e inferiores (137, 138, 139, 140, etc.)
-            const cardIndexStart = BASE_ID_OFFSET + ((currentTableNumber - 1) * 4);
-            const id1 = cardIndexStart + 1; // Superior izquierda
-            const id2 = cardIndexStart + 2; // Superior derecha
-            const id3 = cardIndexStart + 3; // Inferior izquierda
-            const id4 = cardIndexStart + 4; // Inferior derecha
-
-            const tableHTML = `
-                <div class="bingo-table-card">
-                    <div class="preview-wrapper">
-                        <div id="${tableId}" class="bingo-template">
-                            
-                            <!-- IDs Superiores - ALINEADOS EN LA BARRA -->
-                            <div class="top-id top-half left">${id1}</div>
-                            <div class="top-id top-half right">${id2}</div>
-                            
-                            <!-- Cuadrícula de Cartas - ALINEADOS EN LOS CUADROS BLANCOS -->
-                            <div class="bingo-grid">
-                                ${cardHTMLs[0]}
-                                ${cardHTMLs[1]}
-                                ${cardHTMLs[2]}
-                                ${cardHTMLs[3]}
-                            </div>
-
-                            <!-- IDs Inferiores - ALINEADOS EN LA BARRA -->
-                            <div class="top-id bottom-half left">${id3}</div>
-                            <div class="top-id bottom-half right">${id4}</div>
-                        </div>
-                    </div>
-                    
-                    <button onclick="downloadTable('${tableId}')" class="generate-button mt-4">
-                        Descargar Tabla N°${formattedTableNumber} (PNG)
-                    </button>
-                </div>
-            `;
-            outputContainer.insertAdjacentHTML('beforeend', tableHTML);
-            currentTableNumber++;
-        }
-
-        /** Manejador principal para generar todas las tablas solicitadas. */
-        function generateBingoCards() {
+        // Lógica JavaScript
+        function generateBingoPages() {
             const numTablesInput = document.getElementById('numTables');
-            const numTables = parseInt(numTablesInput.value);
-            
-            if (isNaN(numTables) || numTables <= 0) {
-                showMessage("Por favor, introduce un número válido y positivo de tablas.", true);
+            let numTables = parseInt(numTablesInput.value);
+            const outputDiv = document.getElementById('output');
+            const downloadBtn = document.getElementById('downloadBtn');
+            outputDiv.innerHTML = ''; // Limpia el contenido anterior
+
+            if (isNaN(numTables) || numTables < 4 || numTables % 4 !== 0) {
+                alert('Por favor, ingresa una cantidad de tablas válida, que sea un múltiplo de 4 (mínimo 4).');
                 return;
             }
-            
-            generateBtn.disabled = true;
-            generateBtn.textContent = 'Generando...';
-            outputContainer.innerHTML = ''; 
-            messagesDiv.classList.add('hidden');
-            outputTitle.classList.add('hidden');
 
-            const totalCardsToGenerate = numTables * 4;
-            showMessage(`Comenzando la generación de ${numTables} Tablas (Total ${totalCardsToGenerate} cartas)...`);
-            outputTitle.classList.remove('hidden');
+            let cardCounter = 1;
+            const totalPages = numTables / 4;
 
-            // Reiniciar contadores y el Set de hashes
-            generatedCardHashes.clear();
-            currentCardNumber = 1; 
-            currentTableNumber = 1; 
+            for (let p = 0; p < totalPages; p++) {
+                const page = document.createElement('div');
+                page.className = 'bingo-page';
+                page.id = `bingo-page-${p + 1}`;
 
-            let tablesGeneratedCount = 0;
-
-            function generateNextTableAsync() {
-                if (tablesGeneratedCount >= numTables) {
-                    showMessage(`¡Generación completa! Se crearon ${numTables} Tablas con un total de ${totalCardsToGenerate} cartas únicas.`, false);
-                    generateBtn.disabled = false;
-                    generateBtn.textContent = 'Generar Tablas';
-                    return;
-                }
-                
-                const cardHTMLs = [];
-                let generationSuccess = true;
-
-                // Generar 4 cartas únicas para la tabla actual
-                for (let i = 0; i < 4; i++) {
-                    const cardData = generateUniqueCard();
-                    if (!cardData) {
-                        generationSuccess = false; 
-                        break;
-                    }
-                    cardHTMLs.push(createCardHTML(currentCardNumber, cardData)); 
-                    currentCardNumber++;
+                for (let c = 0; c < 4; c++) {
+                    const cardContainer = document.createElement('div');
+                    cardContainer.className = 'bingo-card-container';
+                    
+                    const cardId = document.createElement('div');
+                    cardId.className = 'card-id';
+                    // Formato N°001, N°002, etc.
+                    cardId.textContent = `N°${String(cardCounter).padStart(3, '0')}`;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'bingo-card';
+                    // En un escenario real, aquí se agregarían los números del bingo
+                    // Para este ejemplo, solo se muestra el diseño de fondo
+                    
+                    cardContainer.appendChild(cardId);
+                    cardContainer.appendChild(card);
+                    page.appendChild(cardContainer);
+                    cardCounter++;
                 }
 
-                if (generationSuccess) {
-                    renderCardTable(cardHTMLs);
-                    tablesGeneratedCount++;
-                    // Usamos setTimeout para no bloquear el navegador si se piden muchas tablas
-                    setTimeout(generateNextTableAsync, 0); 
-                } else {
-                    generateBtn.disabled = false;
-                    generateBtn.textContent = 'Generar Tablas';
-                }
+                outputDiv.appendChild(page);
             }
-
-            generateNextTableAsync(); 
+            
+            // Muestra el botón de descarga y las páginas generadas
+            downloadBtn.style.display = 'block';
+            document.querySelectorAll('.bingo-page').forEach(el => el.style.display = 'block');
+            alert(`Se han generado ${numTables} tablas en ${totalPages} páginas. ¡Listo para descargar!`);
         }
 
-        /** Descarga el contenedor de la tabla como una imagen PNG de alta calidad. */
-        function downloadTable(tableId) {
-            const element = document.getElementById(tableId);
-            
-            showMessage(`Preparando descarga de Tabla ${tableId.split('-')[2]}...`, false);
-
-            // Ocultar temporalmente elementos de la interfaz para que no salgan en la captura
-            const elementsToHide = document.querySelectorAll('.app-container, #outputTitle, #output-container button');
-            elementsToHide.forEach(el => el.classList.add('temp-hide'));
-
-            // Escala 2.0 para una resolución final de 3576x5052px (¡Alta calidad!)
-            const scaleFactor = 2.0; 
-            
-            html2canvas(element, {
-                scale: scaleFactor, 
-                useCORS: true, 
-                allowTaint: true, 
-                logging: false, 
-            }).then(canvas => {
-                const link = document.createElement('a');
-                link.download = `Tabla_${tableId.split('-')[2].padStart(4, '0')}.png`; 
-                link.href = canvas.toDataURL('image/png');
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                showMessage(`Tabla ${tableId.split('-')[2]} descargada.`, false);
-            }).catch(error => {
-                console.error('Error al intentar descargar la tabla:', error);
-                showMessage(`Error al descargar. Asegúrate de que 'diseño1.png' esté accesible.`, true);
-            }).finally(() => {
-                // Volver a mostrar todos los elementos
-                elementsToHide.forEach(el => el.classList.remove('temp-hide'));
-            });
+        function downloadPages() {
+            // Activa la función de impresión del navegador
+            window.print();
         }
-
-        // Asignar el evento al botón de generación
-        document.getElementById('generateBtn').addEventListener('click', generateBingoCards);
-
-        // Generar una tabla inicial al cargar para mostrar el ejemplo
-        window.onload = () => {
-            document.getElementById('numTables').value = 1;
-            generateBingoCards();
-        };
-
     </script>
+
 </body>
 </html>
-
