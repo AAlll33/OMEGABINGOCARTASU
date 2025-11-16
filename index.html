@@ -9,7 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* Estilos CSS */
+        /* Estilos de la Interfaz de Control (No aparecerán en la descarga/impresión) */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -30,8 +30,6 @@
             color: #1e3a8a;
             text-align: center;
             margin-bottom: 30px;
-            border-bottom: 2px solid #3b82f6;
-            padding-bottom: 10px;
         }
 
         #controls {
@@ -46,19 +44,7 @@
             justify-content: center;
         }
 
-        #controls label {
-            font-weight: bold;
-            color: #1f2937;
-        }
-
-        #controls input[type="number"] {
-            padding: 10px;
-            border: 2px solid #93c5fd;
-            border-radius: 6px;
-            width: 120px;
-            text-align: center;
-        }
-
+        /* Estilos de los botones y mensajes... (se mantienen igual) */
         .btn-action {
             padding: 12px 25px;
             background-color: #3b82f6;
@@ -75,81 +61,76 @@
             transform: translateY(-1px);
         }
 
-        /* --- Contenedor de Previsualización (Opcional, pero útil) --- */
-        #output {
-            margin-top: 20px;
-            text-align: center;
-            border-top: 1px dashed #ccc;
-            padding-top: 20px;
-        }
-
         .loading-message {
             font-size: 1.2em;
             color: #ef4444;
             font-weight: bold;
             margin: 20px 0;
             display: none;
+            text-align: center;
         }
 
-        /* --- Estilo de la Página de Cartas (DIMENSIONES CRÍTICAS) --- */
+        /* --- Estilo de la Página de Cartas (DIMENSIONES Y ESTRUCTURA CRÍTICAS) --- */
 
         .bingo-page {
             /* Dimensiones basadas en tu diseño: 1788 x 2526 */
-            /* Se establece un tamaño fijo para asegurar la proporción correcta al tomar la captura */
-            width: 1788px; /* El ancho real de tu diseño */
-            height: 2526px; /* El alto real de tu diseño */
+            width: 1788px; 
+            height: 2526px; 
             position: relative;
-            background-color: white;
             margin: 20px auto;
-            /* Se usa una escala para que quepa en la pantalla para previsualización */
+            /* Aquí es donde pondrás TU IMAGEN DE DISEÑO como FONDO de TODA LA PÁGINA. */
+            /* Reemplaza 'tu_diseno_completo.png' con el nombre de tu archivo. */
+            background-image: url('tu_diseno_completo.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            
+            /* Usamos una escala para que se vea en el navegador, pero html2canvas lo ignora al capturar. */
             transform: scale(0.4);
             transform-origin: top center;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            /* Ocultar las páginas reales para que html2canvas las capture sin mostrar el "zoom" */
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            /* Ocultar las páginas reales hasta la captura */
             display: none; 
-            page-break-after: always;
         }
 
-        .bingo-card-container {
-            width: 50%;
-            height: 50%;
-            float: left;
-            position: relative;
-            /* Espacio alrededor para el ID y para que no se peguen */
-            padding: 50px; /* Aumentado el padding para el ID */
+        /* Contenedor que delimita las 4 áreas donde se colocarán los IDs */
+        .card-grid {
+            width: 100%;
+            height: 100%;
+            display: grid;
+            /* Se crean 2 filas y 2 columnas */
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            /* Se añaden márgenes para respetar los bordes y logos de tu diseño */
+            padding: 180px 100px 100px 100px; /* Top Right Bottom Left */
             box-sizing: border-box;
         }
 
-        .bingo-card {
-            /* --- RUTA DE TU DISEÑO PERSONALIZADO AQUÍ --- */
-            /* ¡Cambia 'diseno_ejemplo.png' por el nombre de tu archivo! */
-            background-image: url('diseno_ejemplo.png'); 
-            /* ------------------------------------------- */
-
-            background-size: contain; 
-            background-repeat: no-repeat;
-            background-position: center;
-            width: 100%;
-            height: 100%;
+        .card-area {
             position: relative;
+            /* Añadir padding o margin interno si necesitas que los IDs no toquen el borde de la carta */
+            padding: 20px; 
         }
 
+        /* Estilo para los Números de Identificación (Ej: 137, 138, N°001, N°002) */
         .card-id {
             position: absolute;
-            /* Posiciona el ID en la esquina superior izquierda del contenedor */
-            top: 10px; 
-            left: 10px;
-            font-size: 50px; /* Tamaño grande para que sea claro en la impresión */
+            font-size: 80px; /* Tamaño grande */
             font-weight: 900;
-            color: #1e3a8a; 
-            /* Importante: para que no se choque con el diseño, está fuera del div de la carta */
-            z-index: 10; 
-            background-color: rgba(255, 255, 255, 0.9);
-            padding: 10px 20px;
-            border-radius: 5px;
-            border: 2px solid #3b82f6;
+            color: white; /* Color blanco para contrastar con el fondo oscuro */
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8); /* Sombra para que destaque */
+            z-index: 20; 
         }
-        
+
+        /* Posicionamiento específico (CRUCIAL para imitar tu diseño) */
+
+        /* IDs Superiores (137, 138) */
+        .card-area:nth-child(1) .card-id { top: 10px; left: 10px; } /* Esquina superior izquierda */
+        .card-area:nth-child(2) .card-id { top: 10px; right: 10px; } /* Esquina superior derecha */
+
+        /* IDs Inferiores (139, 140) */
+        .card-area:nth-child(3) .card-id { top: 10px; left: 10px; } /* Esquina superior izquierda del cuadrante inferior */
+        .card-area:nth-child(4) .card-id { top: 10px; right: 10px; } /* Esquina superior derecha del cuadrante inferior */
+
     </style>
 </head>
 <body>
@@ -164,10 +145,12 @@
             <button class="btn-action" onclick="downloadAllPages()" id="downloadBtn" style="display: none;">2. Descargar Todas las Tablas (ZIP)</button>
         </div>
 
-        <h2>⚙️ Instrucción Clave para Modificar el Diseño:</h2>
-        <p>Para cambiar el diseño de la tabla, edita la línea dentro de la sección <code>&lt;style&gt;</code> de este código (alrededor de la línea 110):</p>
-        <pre><code>background-image: url('<strong>diseno_ejemplo.png</strong>');</code></pre>
-        <p>Reemplaza <code>diseno_ejemplo.png</code> por el nombre de tu archivo de diseño (ej: <code>diseno2.png</code>). **Tu archivo de imagen debe estar en la misma carpeta que este HTML.**</p>
+        <h2>⚙️ Instrucción Clave para Usar Tu Diseño:</h2>
+        <p>1. **Prepara tu imagen de diseño (1788 x 2526 px)**. Debe contener **toda la estructura** (el fondo rojo, la cuadrícula de las 4 cartas, los espacios para logos, etc.).</p>
+        <p>2. **Guarda tu imagen** en la misma carpeta que este archivo HTML (ej: `mi_diseno_bingo.png`).</p>
+        <p>3. Edita la línea dentro de la sección <code>&lt;style&gt;</code> (alrededor de la línea 100):</p>
+        <pre><code>background-image: url('<strong>tu_diseno_completo.png</strong>');</code></pre>
+        <p>Reemplaza `tu_diseno_completo.png` por el nombre de tu archivo.</p>
         
         <div class="loading-message" id="loadingMessage">⏳ Procesando y comprimiendo todas las páginas... ¡Espera un momento!</div>
         
@@ -185,7 +168,7 @@
 
         function generateBingoPages() {
             let numTables = parseInt(numTablesInput.value);
-            outputDiv.innerHTML = ''; // Limpia el contenido anterior
+            outputDiv.innerHTML = ''; 
 
             if (isNaN(numTables) || numTables < 4 || numTables % 4 !== 0) {
                 alert('Por favor, ingresa una cantidad de tablas válida, que sea un múltiplo de 4 (mínimo 4).');
@@ -200,31 +183,31 @@
                 const page = document.createElement('div');
                 page.className = 'bingo-page';
                 page.id = `bingo-page-${p + 1}`;
-                page.setAttribute('data-page-number', p + 1);
+                
+                const grid = document.createElement('div');
+                grid.className = 'card-grid';
 
                 for (let c = 0; c < 4; c++) {
-                    if (cardCounter > numTables) break; // Por si acaso
+                    if (cardCounter > numTables) break;
 
-                    const cardContainer = document.createElement('div');
-                    cardContainer.className = 'bingo-card-container';
+                    const cardArea = document.createElement('div');
+                    cardArea.className = 'card-area';
                     
                     const cardId = document.createElement('div');
                     cardId.className = 'card-id';
                     // Formato N°001, N°002, etc.
                     cardId.textContent = `N°${String(cardCounter).padStart(3, '0')}`;
                     
-                    const card = document.createElement('div');
-                    card.className = 'bingo-card';
-                    
-                    cardContainer.appendChild(cardId);
-                    cardContainer.appendChild(card);
-                    page.appendChild(cardContainer);
+                    cardArea.appendChild(cardId);
+                    grid.appendChild(cardArea);
                     cardCounter++;
                 }
+                
+                page.appendChild(grid);
                 outputDiv.appendChild(page);
             }
             
-            alert(`Se han generado ${numTables} tablas en ${totalPages} páginas. Ahora haz clic en 'Descargar'.`);
+            alert(`Se han generado ${numTables} tablas en ${totalPages} páginas. ¡Listo para descargar!`);
             downloadBtn.style.display = 'block';
         }
 
@@ -244,19 +227,15 @@
 
             // 2. Capturar cada página y agregarla al ZIP
             for (const page of pages) {
-                const pageNum = page.getAttribute('data-page-number');
+                const pageNum = page.id.split('-').pop(); // Obtiene el número de página
                 
-                // html2canvas convierte el elemento HTML a un Canvas (imagen)
                 const promise = html2canvas(page, {
-                    // Asegura que las imágenes de fondo se carguen
                     useCORS: true, 
-                    // Escalar a 1.0 para mantener la calidad y la resolución original
                     scale: 1.0 
                 }).then(canvas => {
-                    // Convertir el canvas a una imagen PNG en base64
                     const imgData = canvas.toDataURL('image/png').split(',')[1];
-                    // Agregar la imagen al archivo ZIP
-                    zip.file(`Plancha_Bingo_${String(pageNum).padStart(3, '0')}.png`, imgData, {base64: true});
+                    // El nombre del archivo ahora incluye el número de página
+                    zip.file(`Plancha_Bingo_Pagina_${String(pageNum).padStart(3, '0')}.png`, imgData, {base64: true});
                 });
                 promises.push(promise);
             }
@@ -275,7 +254,7 @@
                 })
                 .catch(err => {
                     console.error("Error al generar el ZIP:", err);
-                    alert("Ocurrió un error al generar el ZIP. Revisa la consola.");
+                    alert("Ocurrió un error al generar el ZIP. Asegúrate que tu imagen de fondo exista y esté en la misma carpeta.");
                     loadingMessage.style.display = 'none';
                 });
         }
