@@ -5,38 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Cartas de Bingo Personalizado</title>
     
-    <!-- Tailwind CSS para la interfaz de usuario (UI) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Librería para capturar el HTML y convertirlo en imagen de alta resolución -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        /* Define la fuente Arial Black para los números y Arial normal para la numeración */
+        /* Define la fuente Arial Black para los números */
         @import url('https://fonts.googleapis.com/css2?family=Arial+Black:wght@900&display=swap');
         
         body {
             background-color: #2D2A2B;
             font-family: Arial, sans-serif;
-            min-height: 100vh;
-            margin: 0;
         }
 
-        /* --- CONFIGURACIÓN BASE DEL DISEÑO 1788x2526 (PARA CAPTURA) --- */
+        /* --- CONFIGURACIÓN BASE DEL DISEÑO 1788x2526 --- */
         .bingo-template {
             position: relative;
-            /* Tamaños fijos para el renderizado final de la impresión */
-            width: 1788px; 
-            height: 2526px; 
+            width: 1788px; /* ANCHO FIJO DEL DISEÑO */
+            height: 2526px; /* ALTO FIJO DEL DISEÑO */
             margin: 20px auto;
-            /* RUTA DE LA IMAGEN DE FONDO */
             background-image: url('diseño1.png'); 
             background-size: 100% 100%;
             background-repeat: no-repeat;
             overflow: hidden;
 
-            /* DEBUG CRÍTICO: Si la imagen no carga, verás este fondo y borde */
+            /* DEBUG VISUAL: Si la imagen no carga, verás este fondo y borde */
             background-color: #DDDDDD; 
-            border: 5px solid #2563EB; /* Borde AZUL para ver el área de la carta */
+            border: 5px solid #2563EB; 
         }
 
         /* Cuadrícula para posicionar las 4 cartas */
@@ -50,8 +45,8 @@
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
             
-            /* POSICIONAMIENTO CALCULADO Y FIJO PARA TU DISEÑO */
-            padding: 23% 8.5% 2% 8.5%; /* Arriba: 23%, Lados: 8.5%, Abajo: 2% */
+            /* POSICIONAMIENTO CALCULADO Y FIJO (Alineación corregida) */
+            padding: 23% 8.5% 2% 8.5%; 
             gap: 2%; 
         }
         
@@ -67,9 +62,9 @@
         .card-cells-grid {
             width: 100%;
             height: 100%;
-            /* AJUSTES DE ALINEACIÓN FINALIZADOS */
-            padding-top: 13.0%; /* Salta el texto BINGO de tu diseño */
-            padding-bottom: 9.5%; /* Deja espacio para la barra de numeración N°001 */
+            /* AJUSTE FINO DE ALINEACIÓN para superponer sobre las celdas blancas */
+            padding-top: 13.0%; /* Salta el texto BINGO */
+            padding-bottom: 9.5%; /* Deja espacio para la numeración N°001 */
             
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -84,22 +79,19 @@
             align-items: center;
             font-size: 32px; 
             font-weight: 900;
-            /* COLOR AJUSTADO: NEGRO, para ir sobre las celdas blancas de tu diseño */
-            color: #000000; 
+            color: #000000; /* Negro, para contraste sobre blanco */
             font-family: 'Arial Black', sans-serif; 
             line-height: 1;
         }
         
         /* Estilo para el "espacio libre" (celda central) */
         .free-space {
-            /* El texto "LOGO" es transparente, solo es un marcador */
             color: transparent; 
         }
 
-        /* Numeración secuencial de la carta (N°0001 / N°0002 / N°0003 / N°0004...) */
+        /* Numeración secuencial de la carta */
         .card-table-number-individual {
             position: absolute;
-            /* POSICIÓN FIJA: Para encajar en la barra inferior de cada carta */
             bottom: 3.5%; 
             left: 0;
             width: 100%;
@@ -114,40 +106,34 @@
         }
 
 
-        /* --- ESTILOS DE LA INTERFAZ DE USUARIO (MOBILE FIRST) --- */
+        /* --- ESTILOS DE LA INTERFAZ DE USUARIO --- */
         .app-container {
             width: 100%;
-            max-width: 600px; 
+            max-width: 800px;
             margin: 0 auto;
             background-color: #fff;
-            padding: 1rem; 
-            border-radius: 0.75rem;
+            padding: 2rem;
+            border-radius: 1rem;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
-
-        /* Contenedor de la vista previa para escalarlo correctamente */
-        #preview-container {
-            border: 2px solid #A0388A;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            background-color: #DDDDDD; /* Fondo de preview por si falla la imagen */
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            /* Escalamiento para la vista previa */
-            transform: scale(0.25); /* Escala pequeña para caber */
-            transform-origin: top left; /* Origen de la transformación */
-            width: 1788px; /* Ancho real, luego escalado */
-            height: 2526px; /* Alto real, luego escalado */
-            margin: 0 auto;
-        }
-
         .generate-button {
             background-color: #A0388A; 
             color: white;
             font-weight: bold;
-            padding: 0.75rem 1.5rem;
+            padding: 0.75rem 2rem;
             border-radius: 0.5rem;
             transition: background-color 0.3s ease, transform 0.1s ease;
         }
+        .generate-button:hover {
+            background-color: #8C2C78;
+            transform: scale(1.02);
+        }
+        .generate-button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        /* Clase para ocultar elementos durante la captura, evitando el efecto de sombra y navegación */
         .temp-hide {
             display: none !important;
         }
@@ -156,48 +142,34 @@
 </head>
 <body class="bg-gray-100 font-sans p-4 min-h-screen flex flex-col items-center">
 
-    <!-- INTERFAZ DE USUARIO (Control) -->
     <div class="app-container mb-8">
         <header class="text-center py-4 mb-4">
-            <h1 class="text-2xl md:text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo</h1>
-            <p class="text-gray-600 mt-2 text-sm md:text-base">Sistema optimizado para tu diseño de 1788 x 2526 píxeles.</p>
-            <p class="text-red-500 font-semibold mt-4 text-xs md:text-sm">¡CRÍTICO! Asegúrate de que tu imagen de fondo se llame: <code class="text-red-800 bg-red-100 p-1 rounded">diseño1.png</code></p>
+            <h1 class="text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo Personalizado</h1>
+            <p class="text-gray-600 mt-2">Sistema de superposición de números, listo para tu diseño de 1788 x 2526 píxeles.</p>
+            <p class="text-red-500 font-semibold mt-4">¡IMPORTANTE! Asegúrate de que tu imagen de fondo se llame `diseño1.png`.</p>
         </header>
 
-        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex-grow w-full">
-                <label for="numTables" class="block text-sm font-medium text-gray-700 mb-1">Número de Tablas a Generar (4 Cartas por Tabla):</label>
-                <input type="number" id="numTables" value="1" min="1" class="block w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#A0388A] focus:border-[#A0388A] text-lg" placeholder="Ej: 100 para 400 cartas">
+        
+
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="flex-grow w-full md:w-auto mb-4 md:mb-0">
+                <label for="numTables" class="block text-lg font-medium text-gray-700 mb-1">Número de Tablas a Generar (4 Cartas por Tabla):</label>
+                <input type="number" id="numTables" value="1" min="1" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#A0388A] focus:border-[#A0388A] text-xl" placeholder="Ej: 100 para 400 cartas">
             </div>
-            <button id="generateBtn" class="generate-button w-full md:w-auto">
+            <button id="generateBtn" class="generate-button w-full md:w-auto ml-0 md:ml-6">
                 Generar Tablas
             </button>
         </div>
         <div id="messages" class="text-center text-red-600 font-semibold mt-4 hidden"></div>
     </div>
+
+    <!-- Título de la sección de salida -->
+    <h2 id="outputTitle" class="text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar (Tamaño 1788x2526px):</h2>
     
-    <!-- Área de PREVIEW de la Última Tabla Generada -->
-    <div class="w-full max-w-lg mx-auto mb-8">
-        <h2 class="text-xl font-bold text-gray-800 border-b pb-2 mb-4 text-center">Última Tabla Generada (Vista Previa)</h2>
-        <div class="w-full h-[600px] overflow-hidden flex justify-center items-center">
-            <!-- El contenido real de 1788x2526px se escala dentro de este div -->
-            <div id="preview-container">
-                <!-- La tabla generada se insertará aquí -->
-            </div>
-        </div>
-    </div>
+    <!-- CONTENEDOR DE SALIDA (Aquí se renderizan las tablas) -->
+    <div id="output-container" class="space-y-12 mb-20">
+        
 
-
-    <h2 id="outputTitle" class="text-xl md:text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Listas para Descargar:</h2>
-    
-    <!-- CONTENEDOR OCULTO PARA LA GENERACIÓN DE ALTA RESOLUCIÓN (Renderiza las tablas sin escalar) -->
-    <div id="output-container-hidden" class="temp-hide">
-        <!-- Las tablas de 1788x2526px se renderizan aquí y luego se capturan -->
-    </div>
-
-    <!-- CONTENEDOR DE BOTONES DE DESCARGA -->
-    <div id="download-buttons-container" class="space-y-4 mb-20 w-full max-w-2xl">
-        <!-- Los botones de descarga se insertan aquí -->
     </div>
 
     <script>
@@ -206,9 +178,7 @@
         let currentTableNumber = 1; 
 
         const messagesDiv = document.getElementById('messages');
-        const outputContainerHidden = document.getElementById('output-container-hidden');
-        const previewContainer = document.getElementById('preview-container');
-        const downloadButtonsContainer = document.getElementById('download-buttons-container');
+        const outputContainer = document.getElementById('output-container');
         const outputTitle = document.getElementById('outputTitle');
         const generateBtn = document.getElementById('generateBtn');
 
@@ -238,29 +208,39 @@
             let attempts = 0;
 
             do {
+                // Generar las 5 columnas respetando los rangos
                 const colB = generateColumn(1, 15, 5);
                 const colI = generateColumn(16, 30, 5);
-                // 4 números para N, el 5to es el espacio libre (0)
-                const colN_temp = generateColumn(31, 45, 4); 
+                const colN_temp = generateColumn(31, 45, 4); // 4 números para N, el 5to es el espacio libre (0)
                 const colG = generateColumn(46, 60, 5);
                 const colO = generateColumn(61, 75, 5);
 
+                // Reconstruir la lista de 25 números en el orden de lectura (por fila, luego por columna)
                 cardNumbers = [];
+                // Creamos el array de hashes para la verificación, que debe estar ordenado
+                let hashArray = []; 
+                let N_index = 0;
+
                 for (let i = 0; i < 5; i++) {
                     cardNumbers.push(colB[i]);
                     cardNumbers.push(colI[i]);
+
+                    // Columna N
                     if (i === 2) { 
-                        cardNumbers.push(0); // Espacio libre
+                        cardNumbers.push(0); // Espacio libre en la celda central (fila 3, columna N)
                     } else {
-                        // Asegurarse de usar los 4 números de N en las filas correctas
-                        cardNumbers.push(colN_temp[i < 2 ? i : i - 1]);
+                        cardNumbers.push(colN_temp[N_index]);
+                        hashArray.push(colN_temp[N_index]); // Añadir al hash
+                        N_index++;
                     }
+
                     cardNumbers.push(colG[i]);
                     cardNumbers.push(colO[i]);
                 }
 
-                // Crear el hash solo con los 24 números
-                cardHash = [ ...colB, ...colI, ...colN_temp, ...colG, ...colO ].join('-');
+                // Generar el hash único (los 24 números ordenados)
+                hashArray = [ ...colB, ...colI, ...colN_temp, ...colG, ...colO ].sort((a, b) => a - b);
+                cardHash = hashArray.join('-');
                 
                 attempts++;
 
@@ -280,41 +260,35 @@
          */
         function createCardHTML(totalCardNumber, cardData) {
             const cardNumbers = cardData.numbers;
-            const formattedNumber = "N°" + String(totalCardNumber).padStart(4, '0'); // N°0001, N°0002, etc.
+            const formattedNumber = String(totalCardNumber).padStart(4, '0'); // N°0001, N°0002, etc.
 
             let cellsHTML = '';
-            // El array cardNumbers contiene los 25 números de la carta ordenados por columna (B, I, N, G, O) y luego por fila (1-5).
-            // Pero el HTML se renderiza por fila, así que necesitamos reordenar o acceder por índice de columna/fila.
-            // La lógica actual de generateUniqueCard ya genera los números en el orden de lectura de celda a celda (25 elementos).
-            // Esto es: B1, I1, N1, G1, O1, B2, I2, N2, G2, O2, ... B5, I5, N5, G5, O5
-
-            for (let i = 0; i < 25; i++) { 
+            for (let i = 0; i < 25; i++) { // 25 celdas
                 const number = cardNumbers[i];
                 if (number === 0) {
-                    // El espacio libre, que es el logo en el diseño. Se hace el texto invisible.
+                    // El espacio libre, que es la imagen en tu diseño, se marca como "LOGO"
                     cellsHTML += `<div class="card-cell-number free-space">LOGO</div>`; 
                 } else {
                     cellsHTML += `<div class="card-cell-number">${number}</div>`;
                 }
             }
 
-
             return `
                 <div class="bingo-card-wrapper">
                     <div class="card-cells-grid">
                         ${cellsHTML}
                     </div>
-                    <!-- N° de Identificación alineado a la barra inferior -->
-                    <div class="card-table-number-individual">${formattedNumber}</div>
+                    <div class="card-table-number-individual">N°${formattedNumber}</div>
                 </div>
             `;
         }
 
-        /** Renderiza una tabla completa (el diseño de 4 cartas con tu fondo). */
+        /** Renderiza una tabla completa (el diseño de 4 cartas con tu fondo) y su botón de descarga. */
         function renderCardTable(cardHTMLs) {
             const tableId = `bingo-table-${currentTableNumber}`;
-            
-            // La estructura principal del diseño (1788x2526px)
+            const formattedTableNumber = String(currentTableNumber).padStart(4, '0');
+
+            // 1. Estructura de la tabla de alta resolución
             const tableHTML = `
                 <div id="${tableId}" class="bingo-template">
                     <div class="bingo-grid">
@@ -324,28 +298,14 @@
                         ${cardHTMLs[3]}
                     </div>
                 </div>
-            `;
-            
-            // 1. Renderizar en el contenedor oculto para la descarga (tamaño real)
-            outputContainerHidden.insertAdjacentHTML('beforeend', tableHTML);
-            
-            // 2. Mostrar en la vista previa (sólo la última tabla)
-            previewContainer.innerHTML = tableHTML;
-            // Necesitamos asegurarnos de que la vista previa use el tamaño real (1788x2526)
-            // y que el contenedor padre lo escale (gestionado por el CSS #preview-container)
-
-            // 3. Añadir el botón de descarga
-            const formattedTableNumber = String(currentTableNumber).padStart(4, '0');
-            const downloadButtonHTML = `
-                <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-md">
-                    <span class="text-gray-700 font-bold">Tabla N°${formattedTableNumber}</span>
+                <!-- 2. Botón de descarga justo debajo de la tabla -->
+                <div class="flex justify-center mt-4 mb-8 no-print">
                     <button onclick="downloadTable('${tableId}')" class="generate-button">
-                        Descargar (PNG)
+                        Descargar Tabla N°${formattedTableNumber} (PNG)
                     </button>
                 </div>
             `;
-            downloadButtonsContainer.insertAdjacentHTML('beforeend', downloadButtonHTML);
-            
+            outputContainer.insertAdjacentHTML('beforeend', tableHTML);
             currentTableNumber++;
         }
 
@@ -361,9 +321,7 @@
             
             generateBtn.disabled = true;
             generateBtn.textContent = 'Generando...';
-            outputContainerHidden.innerHTML = ''; 
-            previewContainer.innerHTML = ''; 
-            downloadButtonsContainer.innerHTML = ''; 
+            outputContainer.innerHTML = ''; 
             messagesDiv.classList.add('hidden');
             outputTitle.classList.add('hidden');
 
@@ -423,10 +381,10 @@
             showMessage(`Preparando descarga de Tabla ${tableId.split('-')[2]}...`, false);
 
             // Ocultar temporalmente los elementos de la interfaz de usuario para la captura
-            const elementsToHide = document.querySelectorAll('.app-container, #outputTitle, #download-buttons-container');
+            const elementsToHide = document.querySelectorAll('.app-container, #outputTitle, .no-print');
             elementsToHide.forEach(el => el.classList.add('temp-hide'));
 
-            // Escala 2 para duplicar la resolución de la imagen (3576x5052px)
+            // Escala 2 para duplicar la resolución de la imagen (1788*2 x 2526*2)
             const scaleFactor = 2; 
             
             html2canvas(element, {
