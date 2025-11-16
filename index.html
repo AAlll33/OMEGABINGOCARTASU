@@ -67,9 +67,13 @@
         .card-cells-grid {
             width: 100%;
             height: 100%;
-            /* AJUSTE para centrar los números dentro de los cuadros blancos */
-            padding-top: 13.0%; 
-            padding-bottom: 9.5%;
+            
+            /* AJUSTE CLAVE: Centrar los números dentro de los cuadros blancos */
+            /* El padding ayuda a mover el grid interno para alinearlo a la zona de números */
+            padding-top: 13.5%; 
+            padding-bottom: 9.5%; 
+            padding-left: 2%; /* Añadido para compensar la alineación del grid */
+            padding-right: 2%; /* Añadido para compensar la alineación del grid */
             
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -145,9 +149,6 @@
         }
 
         /* --- ESTILOS DE LA INTERFAZ DE USUARIO Y VISTA PREVIA --- */
-        .app-container {
-            /* ... (Estilos de la interfaz) ... */
-        }
         .generate-button {
             background-color: #A0388A; 
             color: white;
@@ -182,7 +183,7 @@
             align-items: start;
         }
 
-        /* Estilo para cada "tarjeta" de vista previa (VISIBILIDAD GARANTIZADA) */
+        /* Estilo para cada "tarjeta" de vista previa */
         .bingo-table-card {
             background-color: #fff;
             border-radius: 0.75rem;
@@ -194,30 +195,47 @@
             align-items: center;
             width: 100%; 
             max-width: 400px; 
-            height: auto; /* FORZAR altura automática */
+            height: auto; 
         }
 
-        /* Escalar la tabla de bingo para la visualización en la interfaz */
+        /* CONTENEDOR DE ESCALADO DE VISTA PREVIA (Proporción 1:1.41) */
+        .preview-wrapper {
+            width: 100%;
+            /* Uso de padding-bottom para mantener la relación de aspecto 1788/2526 = ~70.78% */
+            padding-bottom: 141.27%; /* (2526 / 1788) * 100 = 141.27% */
+            position: relative;
+            overflow: hidden;
+            background-color: #2D2A2B; /* Fondo de la plantilla */
+            border-radius: 0.5rem;
+        }
+
+        /* El elemento de alta resolución se escala dentro del contenedor proporcional */
         .bingo-table-card .bingo-template {
-            width: 100%; 
-            height: auto; 
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1788px; 
+            height: 2526px; 
+            /* Se escala el DIV de alta resolución para que quepa en el preview-wrapper */
+            transform-origin: top left;
+            transform: scale(0.2); 
             border: none; 
             background-color: transparent; 
             box-shadow: none;
-            /* Forzar visualización de la imagen, aunque sea pequeña */
-            min-height: 200px;
+            /* Esconder el borde de debug en la vista previa */
+            border: none; 
         }
         
-        /* Reducir el tamaño de las fuentes en la vista previa para que se ajusten al móvil */
+        /* Asegurar que los tamaños de fuente originales se mantengan para que el transform scale los aplique uniformemente */
         .bingo-table-card .card-cell-number {
-            font-size: 16px; 
+            font-size: 80px; 
         }
         .bingo-table-card .card-table-number-individual {
-            font-size: 10px;
+            font-size: 40px;
         }
         .bingo-table-card .top-id {
-            font-size: 24px; 
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+            font-size: 90px;
+            text-shadow: 4px 4px 6px rgba(0,0,0,0.8);
         }
         
     </style>
@@ -243,7 +261,7 @@
         <div id="messages" class="text-center text-red-600 font-semibold mt-4 hidden"></div>
     </div>
 
-    <h2 id="outputTitle" class="text-xl md:text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar (Vista Previa):</h2>
+    <h2 id="outputTitle" class="text-xl md:text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar (Vista Previa Proporcional y Alineada):</h2>
     
     <div id="output-container">
         <!-- Las tablas de Bingo se insertarán aquí -->
@@ -371,23 +389,26 @@
 
             const tableHTML = `
                 <div class="bingo-table-card">
-                    <!-- Contenedor de ALTA RESOLUCIÓN para la CAPTURA -->
-                    <div id="${tableId}" class="bingo-template">
-                        
-                        <!-- Identificadores superiores e inferiores -->
-                        <div class="top-id top-half left">${id1}</div>
-                        <div class="top-id top-half right">${id2}</div>
-                        
-                        <!-- Contenedor de las 4 Cartas -->
-                        <div class="bingo-grid">
-                            ${cardHTMLs[0]}
-                            ${cardHTMLs[1]}
-                            ${cardHTMLs[2]}
-                            ${cardHTMLs[3]}
-                        </div>
+                    <!-- Contenedor Proporcional para la Vista Previa -->
+                    <div class="preview-wrapper">
+                        <!-- Contenedor de ALTA RESOLUCIÓN para la CAPTURA (Escala en CSS) -->
+                        <div id="${tableId}" class="bingo-template">
+                            
+                            <!-- Identificadores superiores e inferiores -->
+                            <div class="top-id top-half left">${id1}</div>
+                            <div class="top-id top-half right">${id2}</div>
+                            
+                            <!-- Contenedor de las 4 Cartas -->
+                            <div class="bingo-grid">
+                                ${cardHTMLs[0]}
+                                ${cardHTMLs[1]}
+                                ${cardHTMLs[2]}
+                                ${cardHTMLs[3]}
+                            </div>
 
-                        <div class="top-id bottom-half left">${id3}</div>
-                        <div class="top-id bottom-half right">${id4}</div>
+                            <div class="top-id bottom-half left">${id3}</div>
+                            <div class="top-id bottom-half right">${id4}</div>
+                        </div>
                     </div>
                     
                     <button onclick="downloadTable('${tableId}')" class="generate-button mt-4">
