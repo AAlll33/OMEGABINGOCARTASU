@@ -29,10 +29,15 @@
             width: 1788px; 
             height: 2526px; 
             margin: 20px auto;
+            /* RUTA DE LA IMAGEN DE FONDO */
             background-image: url('diseño1.png'); 
             background-size: 100% 100%;
             background-repeat: no-repeat;
             overflow: hidden;
+
+            /* DEBUG: Si la imagen no carga, al menos verás un fondo oscuro */
+            background-color: #333; 
+            border: 5px solid red; /* Borde para ver el área de la carta si no carga el fondo */
         }
 
         /* Cuadrícula para posicionar las 4 cartas */
@@ -79,16 +84,19 @@
             justify-content: center;
             align-items: center;
             /* AJUSTE CLAVE DE TAMAÑO */
-            font-size: 30px; /* Tamaño ligeramente más pequeño para encajar mejor */
+            font-size: 30px; 
             font-weight: 900;
-            color: #000000; /* Negro */
+            /* CAMBIO CLAVE: Color BLANCO para asegurar visibilidad */
+            color: #FFFFFF; 
             font-family: 'Arial Black', sans-serif; 
             line-height: 1;
         }
         
         /* Estilo para el "espacio libre" (celda central) */
         .free-space {
-            color: transparent; 
+            /* CAMBIO: Usar un color visible para el logo central si la imagen no carga */
+            color: #FFFF00; /* Amarillo temporal de debug */
+            font-size: 20px;
         }
 
         /* Numeración secuencial de la carta (N°0001 / N°0002 / N°0003 / N°0004...) */
@@ -142,7 +150,7 @@
         <header class="text-center py-4 mb-4">
             <h1 class="text-2xl md:text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo</h1>
             <p class="text-gray-600 mt-2 text-sm md:text-base">Sistema optimizado para tu diseño de 1788 x 2526 píxeles.</p>
-            <p class="text-red-500 font-semibold mt-4 text-xs md:text-sm">Recuerda: El fondo de la tabla debe ser tu archivo `diseño1.png`.</p>
+            <p class="text-red-500 font-semibold mt-4 text-xs md:text-sm">¡CRÍTICO! Asegúrate de que tu imagen de fondo se llame: <code class="text-red-800 bg-red-100 p-1 rounded">diseño1.png</code></p>
         </header>
 
         <div class="flex flex-col md:flex-row items-center justify-between gap-4">
