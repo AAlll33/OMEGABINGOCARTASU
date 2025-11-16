@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Cartas de Bingo Maestro</title>
     
-    <!-- Tailwind CSS para la interfaz -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Librería para capturar el HTML y convertirlo en imagen de alta resolución -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
@@ -36,7 +34,7 @@
             overflow: hidden;
 
             /* Borde de debug que puedes quitar una vez funcione */
-            border: 5px solid rgba(255, 255, 255, 0.1); 
+            /* border: 5px solid rgba(255, 255, 255, 0.1); */ 
         }
 
         /* Contenedor principal para las 4 cartas */
@@ -68,17 +66,17 @@
             width: 100%;
             height: 100%;
             
-            /* AJUSTE CLAVE: Centrar los números dentro de los cuadros blancos */
-            /* El padding ayuda a mover el grid interno para alinearlo a la zona de números */
-            padding-top: 13.5%; 
-            padding-bottom: 9.5%; 
-            padding-left: 2%; /* Añadido para compensar la alineación del grid */
-            padding-right: 2%; /* Añadido para compensar la alineación del grid */
+            /* AJUSTE CLAVE PARA LA ALINEACIÓN PERFECTA DE LOS NÚMEROS */
+            /* Estos valores empíricos están optimizados para tu diseño */
+            padding-top: 13.0%; 
+            padding-bottom: 9.0%; 
+            padding-left: 2.5%; 
+            padding-right: 2.5%; 
             
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             grid-template-rows: repeat(5, 1fr); 
-            gap: 0; 
+            gap: 0; /* Sin espacio entre las celdas para un ajuste preciso */
         }
 
         /* Celda individual con el número de Bingo */
@@ -94,42 +92,31 @@
             line-height: 1;
         }
         
-        /* Espacio libre */
+        /* Espacio libre (sin texto visible) */
         .free-space {
             color: transparent; 
         }
 
         /* --- IDENTIFICADORES DE CARTA (N°0001, N°0002, etc. - ABAJO) --- */
-        .card-table-number-individual {
-            position: absolute;
-            bottom: 3.5%; 
-            left: 0;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px; 
-            font-weight: bold;
-            color: #FFFFFF; 
-            font-family: Arial, sans-serif; 
-            z-index: 10;
-        }
+        /* ESTA CLASE HA SIDO ELIMINADA DEL HTML PARA NO MOSTRAR LOS NÚMEROS INFERIORES */
+        /* .card-table-number-individual {
+            display: none; 
+        } */
 
-        /* --- IDENTIFICADORES DE TABLA (137, 138, etc. - ARRIBA) --- */
+        /* --- IDENTIFICADORES DE TABLA (137, 138, etc. - ARRIBA Y ABAJO) --- */
         .top-id {
             position: absolute;
-            /* TAMAÑO DE FUENTE AJUSTADO ARIAL BLACK */
-            font-size: 90px; 
+            /* TAMAÑO DE FUENTE AJUSTADO PARA COINCIDIR CON TU EJEMPLO */
+            font-size: 100px; /* Incrementado para mejor visibilidad */
             font-weight: 900;
             color: #FFFFFF; 
             font-family: 'Arial Black', sans-serif;
             z-index: 100; 
             text-shadow: 4px 4px 6px rgba(0,0,0,0.8); 
-            /* Para que el texto no afecte el bounding box de la captura */
             line-height: 1; 
         }
         
-        /* Posiciones FINAS para los IDs superiores */
+        /* Posiciones FINAS para los IDs superiores e inferiores */
         .top-id.top-half.left {
             top: 5.0%; 
             left: 10.0%;
@@ -138,7 +125,6 @@
             top: 5.0%; 
             right: 10.0%;
         }
-        /* Posiciones FINAS para los IDs inferiores */
         .top-id.bottom-half.left {
             top: 51.0%; 
             left: 10.0%; 
@@ -149,6 +135,15 @@
         }
 
         /* --- ESTILOS DE LA INTERFAZ DE USUARIO Y VISTA PREVIA --- */
+        .app-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
         .generate-button {
             background-color: #A0388A; 
             color: white;
@@ -222,7 +217,6 @@
             border: none; 
             background-color: transparent; 
             box-shadow: none;
-            /* Esconder el borde de debug en la vista previa */
             border: none; 
         }
         
@@ -230,11 +224,8 @@
         .bingo-table-card .card-cell-number {
             font-size: 80px; 
         }
-        .bingo-table-card .card-table-number-individual {
-            font-size: 40px;
-        }
         .bingo-table-card .top-id {
-            font-size: 90px;
+            font-size: 100px; /* Ajustado para la vista previa */
             text-shadow: 4px 4px 6px rgba(0,0,0,0.8);
         }
         
@@ -264,12 +255,11 @@
     <h2 id="outputTitle" class="text-xl md:text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar (Vista Previa Proporcional y Alineada):</h2>
     
     <div id="output-container">
-        <!-- Las tablas de Bingo se insertarán aquí -->
-    </div>
+        </div>
 
     <script>
         const generatedCardHashes = new Set(); 
-        let currentCardNumber = 1; // N°0001, N°0002... (Identificador inferior de cada carta)
+        let currentCardNumber = 1; // N°0001, N°0002... (Ya no se usa para mostrar, solo para la lógica interna)
         let currentTableNumber = 1; // 1, 2, 3... (Usado para calcular los IDs superiores 137, 138...)
         const BASE_ID_OFFSET = 136; // Si la primera carta es 137, la tabla 1 empieza en 136 + 1.
 
@@ -349,16 +339,16 @@
 
         /**
          * Crea el HTML de los números para una sola carta de bingo.
+         * Se elimina el "N°0001" de aquí.
          */
         function createCardHTML(totalCardNumber, cardData) {
             const cardNumbers = cardData.numbers;
-            const formattedNumber = String(totalCardNumber).padStart(4, '0'); 
+            // const formattedNumber = String(totalCardNumber).padStart(4, '0'); // Ya no se usa
 
             let cellsHTML = '';
             for (let i = 0; i < 25; i++) { 
                 const number = cardNumbers[i];
                 if (number === 0) {
-                    // Celda central libre con el texto "LOGO" (invisible, pero ocupa espacio)
                     cellsHTML += `<div class="card-cell-number free-space">LOGO</div>`; 
                 } else {
                     cellsHTML += `<div class="card-cell-number">${number}</div>`;
@@ -370,8 +360,7 @@
                     <div class="card-cells-grid">
                         ${cellsHTML}
                     </div>
-                    <div class="card-table-number-individual">N°${formattedNumber}</div>
-                </div>
+                    </div>
             `;
         }
 
@@ -389,16 +378,12 @@
 
             const tableHTML = `
                 <div class="bingo-table-card">
-                    <!-- Contenedor Proporcional para la Vista Previa -->
                     <div class="preview-wrapper">
-                        <!-- Contenedor de ALTA RESOLUCIÓN para la CAPTURA (Escala en CSS) -->
                         <div id="${tableId}" class="bingo-template">
                             
-                            <!-- Identificadores superiores e inferiores -->
                             <div class="top-id top-half left">${id1}</div>
                             <div class="top-id top-half right">${id2}</div>
                             
-                            <!-- Contenedor de las 4 Cartas -->
                             <div class="bingo-grid">
                                 ${cardHTMLs[0]}
                                 ${cardHTMLs[1]}
