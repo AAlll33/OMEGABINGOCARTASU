@@ -7,7 +7,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Librería para capturar el HTML y convertirlo en imagen de alta resolución -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Define la fuente Arial Black para los números */
@@ -16,14 +15,18 @@
         body {
             background-color: #2D2A2B;
             font-family: Arial, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* --- CONFIGURACIÓN BASE DEL DISEÑO 1788x2526 --- */
+        /* --- CONFIGURACIÓN BASE DEL DISEÑO 1788x2526 (PARA CAPTURA) --- */
         .bingo-template {
             position: relative;
             width: 1788px; /* ANCHO FIJO DEL DISEÑO */
             height: 2526px; /* ALTO FIJO DEL DISEÑO */
-            margin: 20px auto;
             background-image: url('diseño1.png'); 
             background-size: 100% 100%;
             background-repeat: no-repeat;
@@ -31,7 +34,7 @@
 
             /* DEBUG VISUAL: Si la imagen no carga, verás este fondo y borde */
             background-color: #DDDDDD; 
-            border: 5px solid #2563EB; 
+            border: 5px solid #2563EB; /* Borde AZUL para ver el área de la carta */
         }
 
         /* Cuadrícula para posicionar las 4 cartas */
@@ -89,7 +92,7 @@
             color: transparent; 
         }
 
-        /* Numeración secuencial de la carta */
+        /* Numeración secuencial de la carta (N°0001 / N°0002 / N°0003 / N°0004...) */
         .card-table-number-individual {
             position: absolute;
             bottom: 3.5%; 
@@ -104,6 +107,26 @@
             font-family: Arial, sans-serif; 
             z-index: 10;
         }
+
+        /* NUEVOS ESTILOS PARA LOS IDENTIFICADORES SUPERIORES (137, 138, etc.) */
+        .top-left-id, .top-right-id {
+            position: absolute;
+            font-size: 40px; /* Tamaño grande para que destaque */
+            font-weight: bold;
+            color: #FFFFFF; /* Blanco */
+            font-family: 'Arial Black', sans-serif;
+            z-index: 100; /* Asegurarse de que esté por encima de todo */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Sombra para mejor lectura */
+        }
+        .top-left-id {
+            top: 5.5%; /* Ajuste fino */
+            left: 10.5%; /* Ajuste fino */
+        }
+        .top-right-id {
+            top: 5.5%; /* Ajuste fino */
+            right: 10.5%; /* Ajuste fino */
+        }
+        /* Fin de NUEVOS ESTILOS */
 
 
         /* --- ESTILOS DE LA INTERFAZ DE USUARIO --- */
@@ -133,44 +156,96 @@
             cursor: not-allowed;
             transform: none;
         }
-        /* Clase para ocultar elementos durante la captura, evitando el efecto de sombra y navegación */
+        /* Clase para ocultar elementos durante la captura */
         .temp-hide {
             display: none !important;
         }
 
+        /* CONTENEDOR DE SALIDA (Para mostrar las tablas generadas) */
+        #output-container {
+            width: 100%; /* Ocupa el ancho completo */
+            max-width: 1200px; /* Limite máximo para no ser excesivamente ancho en pantallas grandes */
+            margin: 0 auto;
+            padding: 1rem;
+            display: grid;
+            /* CREADO PARA MOSTRAR 2 COLUMNAS O AJUSTARSE A 1 EN MÓVIL */
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* 2 columnas si hay espacio, 1 si es móvil */
+            gap: 2rem; /* Espacio entre las tablas */
+            justify-items: center; /* Centra las tablas dentro de las columnas */
+            align-items: start;
+        }
+
+        /* Estilo para cada "tarjeta" que contiene una tabla de bingo y su botón de descarga */
+        .bingo-table-card {
+            background-color: #fff;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%; /* Para que ocupe el espacio de su columna */
+        }
+
+        /* Escalar la tabla de bingo para la visualización en la interfaz (NO para la descarga) */
+        .bingo-table-card .bingo-template {
+            width: 100%; /* Ocupa el 100% de la "tarjeta" */
+            height: auto; /* Altura automática para mantener la proporción */
+            border: none; /* Quitamos el borde de debug para la visualización normal */
+            background-color: transparent; /* Quitamos el fondo de debug */
+            box-shadow: none;
+        }
+        /* Ajuste específico para que las imágenes de fondo se vean bien escaladas */
+        .bingo-table-card .bingo-template .bingo-grid {
+             /* El padding y el gap de la cuadrícula deben escalarse con el ancho */
+            padding: 23% 8.5% 2% 8.5%; 
+            gap: 2%; 
+        }
+        .bingo-table-card .card-cells-grid {
+            padding-top: 13.0%;
+            padding-bottom: 9.5%;
+        }
+        .bingo-table-card .card-cell-number {
+            font-size: 1.8vw; /* Tamaño de fuente relativo al viewport para escalar mejor */
+        }
+        .bingo-table-card .card-table-number-individual {
+            font-size: 1.5vw;
+        }
+        .bingo-table-card .top-left-id, .bingo-table-card .top-right-id {
+            font-size: 2vw; /* Ajuste para los IDs superiores en la vista previa */
+            top: 5.5%; /* Mantener la posición relativa */
+            left: 10.5%;
+            right: 10.5%;
+        }
+        
     </style>
 </head>
 <body class="bg-gray-100 font-sans p-4 min-h-screen flex flex-col items-center">
 
     <div class="app-container mb-8">
         <header class="text-center py-4 mb-4">
-            <h1 class="text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo Personalizado</h1>
-            <p class="text-gray-600 mt-2">Sistema de superposición de números, listo para tu diseño de 1788 x 2526 píxeles.</p>
-            <p class="text-red-500 font-semibold mt-4">¡IMPORTANTE! Asegúrate de que tu imagen de fondo se llame `diseño1.png`.</p>
+            <h1 class="text-2xl md:text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo Personalizado</h1>
+            <p class="text-gray-600 mt-2 text-sm md:text-base">Sistema de superposición de números, listo para tu diseño de 1788 x 2526 píxeles.</p>
+            <p class="text-red-500 font-semibold mt-4 text-xs md:text-sm">¡IMPORTANTE! Asegúrate de que tu imagen de fondo se llame `diseño1.png`.</p>
         </header>
 
-        
-
-        <div class="flex flex-col md:flex-row items-center justify-between">
-            <div class="flex-grow w-full md:w-auto mb-4 md:mb-0">
-                <label for="numTables" class="block text-lg font-medium text-gray-700 mb-1">Número de Tablas a Generar (4 Cartas por Tabla):</label>
-                <input type="number" id="numTables" value="1" min="1" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#A0388A] focus:border-[#A0388A] text-xl" placeholder="Ej: 100 para 400 cartas">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex-grow w-full">
+                <label for="numTables" class="block text-sm font-medium text-gray-700 mb-1">Número de Tablas a Generar (4 Cartas por Tabla):</label>
+                <input type="number" id="numTables" value="1" min="1" class="block w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:ring-[#A0388A] focus:border-[#A0388A] text-lg" placeholder="Ej: 100 para 400 cartas">
             </div>
-            <button id="generateBtn" class="generate-button w-full md:w-auto ml-0 md:ml-6">
+            <button id="generateBtn" class="generate-button w-full md:w-auto">
                 Generar Tablas
             </button>
         </div>
         <div id="messages" class="text-center text-red-600 font-semibold mt-4 hidden"></div>
     </div>
 
-    <!-- Título de la sección de salida -->
-    <h2 id="outputTitle" class="text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar (Tamaño 1788x2526px):</h2>
+    <h2 id="outputTitle" class="text-xl md:text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar:</h2>
     
-    <!-- CONTENEDOR DE SALIDA (Aquí se renderizan las tablas) -->
-    <div id="output-container" class="space-y-12 mb-20">
-        
-
-    </div>
+    <div id="output-container">
+        </div>
 
     <script>
         const generatedCardHashes = new Set(); 
@@ -208,29 +283,23 @@
             let attempts = 0;
 
             do {
-                // Generar las 5 columnas respetando los rangos
                 const colB = generateColumn(1, 15, 5);
                 const colI = generateColumn(16, 30, 5);
                 const colN_temp = generateColumn(31, 45, 4); // 4 números para N, el 5to es el espacio libre (0)
                 const colG = generateColumn(46, 60, 5);
                 const colO = generateColumn(61, 75, 5);
 
-                // Reconstruir la lista de 25 números en el orden de lectura (por fila, luego por columna)
                 cardNumbers = [];
-                // Creamos el array de hashes para la verificación, que debe estar ordenado
-                let hashArray = []; 
                 let N_index = 0;
 
                 for (let i = 0; i < 5; i++) {
                     cardNumbers.push(colB[i]);
                     cardNumbers.push(colI[i]);
 
-                    // Columna N
                     if (i === 2) { 
-                        cardNumbers.push(0); // Espacio libre en la celda central (fila 3, columna N)
+                        cardNumbers.push(0); // Espacio libre
                     } else {
                         cardNumbers.push(colN_temp[N_index]);
-                        hashArray.push(colN_temp[N_index]); // Añadir al hash
                         N_index++;
                     }
 
@@ -238,9 +307,8 @@
                     cardNumbers.push(colO[i]);
                 }
 
-                // Generar el hash único (los 24 números ordenados)
-                hashArray = [ ...colB, ...colI, ...colN_temp, ...colG, ...colO ].sort((a, b) => a - b);
-                cardHash = hashArray.join('-');
+                // Generar el hash único con los 24 números ordenados
+                cardHash = [ ...colB, ...colI, ...colN_temp, ...colG, ...colO ].sort((a, b) => a - b).join('-');
                 
                 attempts++;
 
@@ -263,10 +331,9 @@
             const formattedNumber = String(totalCardNumber).padStart(4, '0'); // N°0001, N°0002, etc.
 
             let cellsHTML = '';
-            for (let i = 0; i < 25; i++) { // 25 celdas
+            for (let i = 0; i < 25; i++) { 
                 const number = cardNumbers[i];
                 if (number === 0) {
-                    // El espacio libre, que es la imagen en tu diseño, se marca como "LOGO"
                     cellsHTML += `<div class="card-cell-number free-space">LOGO</div>`; 
                 } else {
                     cellsHTML += `<div class="card-cell-number">${number}</div>`;
@@ -287,20 +354,30 @@
         function renderCardTable(cardHTMLs) {
             const tableId = `bingo-table-${currentTableNumber}`;
             const formattedTableNumber = String(currentTableNumber).padStart(4, '0');
+            
+            // Los identificadores superiores (137, 138, etc.)
+            const topLeftId = currentTableNumber * 4 - 3; // Ejemplo: Si es tabla 1, (1*4)-3 = 1 -> 137
+            const topRightId = currentTableNumber * 4 - 2; // Ejemplo: Si es tabla 1, (1*4)-2 = 2 -> 138
+            const bottomLeftId = currentTableNumber * 4 - 1; // Ejemplo: Si es tabla 1, (1*4)-1 = 3 -> 139
+            const bottomRightId = currentTableNumber * 4;     // Ejemplo: Si es tabla 1, (1*4) = 4 -> 140
 
-            // 1. Estructura de la tabla de alta resolución
             const tableHTML = `
-                <div id="${tableId}" class="bingo-template">
-                    <div class="bingo-grid">
-                        ${cardHTMLs[0]}
-                        ${cardHTMLs[1]}
-                        ${cardHTMLs[2]}
-                        ${cardHTMLs[3]}
+                <div class="bingo-table-card">
+                    <div id="${tableId}" class="bingo-template">
+                        <div class="top-left-id">${topLeftId}</div>
+                        <div class="top-right-id">${topRightId}</div>
+                        
+                        <div class="bingo-grid">
+                            ${cardHTMLs[0]}
+                            ${cardHTMLs[1]}
+                            ${cardHTMLs[2]}
+                            ${cardHTMLs[3]}
+                        </div>
+
+                        <div class="top-left-id" style="top: 51%; left: 10.5%;">${bottomLeftId}</div>
+                        <div class="top-right-id" style="top: 51%; right: 10.5%;">${bottomRightId}</div>
                     </div>
-                </div>
-                <!-- 2. Botón de descarga justo debajo de la tabla -->
-                <div class="flex justify-center mt-4 mb-8 no-print">
-                    <button onclick="downloadTable('${tableId}')" class="generate-button">
+                    <button onclick="downloadTable('${tableId}')" class="generate-button mt-4">
                         Descargar Tabla N°${formattedTableNumber} (PNG)
                     </button>
                 </div>
@@ -331,8 +408,8 @@
 
             // Reiniciar contadores y el Set de hashes
             generatedCardHashes.clear();
-            currentCardNumber = 1;
-            currentTableNumber = 1;
+            currentCardNumber = 1; // Este es para el N°0001, N°0002...
+            currentTableNumber = 1; // Este es para el 137, 138, 139, 140...
 
             let tablesGeneratedCount = 0;
 
@@ -346,15 +423,15 @@
                 
                 const cardHTMLs = [];
                 let generationSuccess = true;
-                const tableStartCardNumber = currentCardNumber;
 
-                // Generar 4 cartas únicas para la tabla actual
+                // Generar 4 cartas únicas para la tabla actual (N°0001, N°0002, N°0003, N°0004)
                 for (let i = 0; i < 4; i++) {
                     const cardData = generateUniqueCard();
                     if (!cardData) {
                         generationSuccess = false; 
                         break;
                     }
+                    // currentCardNumber se usa para los N°0001, N°0002 en la parte inferior de CADA carta
                     cardHTMLs.push(createCardHTML(currentCardNumber, cardData)); 
                     currentCardNumber++;
                 }
@@ -362,12 +439,10 @@
                 if (generationSuccess) {
                     renderCardTable(cardHTMLs);
                     tablesGeneratedCount++;
-                    // Usar setTimeout para evitar el bloqueo del navegador en grandes cantidades
                     setTimeout(generateNextTableAsync, 0); 
                 } else {
                     generateBtn.disabled = false;
                     generateBtn.textContent = 'Generar Tablas';
-                    currentCardNumber = tableStartCardNumber;
                 }
             }
 
@@ -381,10 +456,10 @@
             showMessage(`Preparando descarga de Tabla ${tableId.split('-')[2]}...`, false);
 
             // Ocultar temporalmente los elementos de la interfaz de usuario para la captura
-            const elementsToHide = document.querySelectorAll('.app-container, #outputTitle, .no-print');
+            const elementsToHide = document.querySelectorAll('.app-container, #outputTitle, #output-container .generate-button');
             elementsToHide.forEach(el => el.classList.add('temp-hide'));
 
-            // Escala 2 para duplicar la resolución de la imagen (1788*2 x 2526*2)
+            // Escala 2 para duplicar la resolución de la imagen (3576x5052px)
             const scaleFactor = 2; 
             
             html2canvas(element, {
