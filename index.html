@@ -7,6 +7,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Librería para capturar el HTML y convertirlo en imagen de alta resolución -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Define la fuente Arial Black para los números y Arial normal para la numeración */
@@ -23,13 +24,10 @@
             width: 1788px; /* ANCHO FIJO DEL DISEÑO */
             height: 2526px; /* ALTO FIJO DEL DISEÑO */
             margin: 20px auto;
-            /* ********** CORRECCIÓN DE EXTENSIÓN ********** */
-            /* Se usa 'diseño1.png' para que coincida con tu archivo. */
             background-image: url('diseño1.png'); 
-            /* ********************************************* */
             background-size: 100% 100%;
             background-repeat: no-repeat;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+            /* Se elimina box-shadow aquí para facilitar la descarga sin bordes */
             overflow: hidden;
         }
 
@@ -44,7 +42,7 @@
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
             
-            /* POSICIONAMIENTO CALCULADO Y FIJO PARA TU DISEÑO (Tom y Jerry) */
+            /* POSICIONAMIENTO CALCULADO Y FIJO PARA TU DISEÑO */
             padding: 23% 8.5% 2% 8.5%; /* Arriba: 23%, Lados: 8.5%, Abajo: 2% */
             gap: 2%; /* Espacio entre las cartas */
         }
@@ -59,12 +57,15 @@
 
         /* Contenedor de las celdas de números (5x5) */
         .card-cells-grid {
-            height: 100%; 
-            /* Padding para saltar el encabezado BINGO de tu diseño y la barra de numeración */
+            width: 100%;
+            height: 100%;
+            /* Ajuste de padding para centrar el área de números sobre las celdas blancas de tu fondo */
             padding-top: 13.5%; /* Salta el texto BINGO de tu diseño */
             padding-bottom: 9%; /* Deja espacio para la barra de numeración N°001 */
+            
             display: grid;
             grid-template-columns: repeat(5, 1fr);
+            /* Importante: 5 filas de números. Usamos 'repeat(5, 1fr)' */
             grid-template-rows: repeat(5, 1fr); 
             gap: 0; 
         }
@@ -74,35 +75,35 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Estilo fijo para los números de las cartas */
-            font-size: 40px; 
+            /* ********** CORRECCIÓN DE TAMAÑO ********** */
+            font-size: 32px; /* Tamaño ajustado para mejor ajuste en la celda */
             font-weight: 900;
             color: #000000; /* Negro */
             font-family: 'Arial Black', sans-serif; 
-            /* Alineación específica para el centro de la celda */
             line-height: 1;
         }
         
         /* Estilo para el "espacio libre" (celda central) */
         .free-space {
-            color: transparent; /* El texto "LOGO" es invisible */
+            /* El texto "LOGO" es invisible, solo es un marcador */
+            color: transparent; 
         }
 
-        /* Numeración secuencial de la carta (N°001 / N°002 / N°003 / N°004...) */
+        /* Numeración secuencial de la carta (N°0001 / N°0002 / N°0003 / N°0004...) */
         .card-table-number-individual {
             position: absolute;
             /* POSICIÓN FIJA: Caerá en la barra marrón inferior de cada carta */
-            bottom: 3%; /* 3% desde el borde inferior de cada carta */
+            bottom: 3.5%; /* Ligeramente ajustado para encajar mejor */
             left: 0;
             width: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Estilo fijo para la numeración */
             font-size: 32px; 
             font-weight: normal;
-            color: #000000; /* Negro */
-            font-family: Arial, sans-serif; /* Arial normal */
+            /* ********** CORRECCIÓN DE COLOR ********** */
+            color: #FFFFFF; /* Blanco, como solicitaste */
+            font-family: Arial, sans-serif; 
             z-index: 10;
         }
 
@@ -134,10 +135,9 @@
             cursor: not-allowed;
             transform: none;
         }
+        /* Clase para ocultar elementos durante la captura, evitando el efecto de sombra y navegación */
         .temp-hide {
-            visibility: hidden;
-            position: absolute;
-            left: -9999px;
+            display: none !important;
         }
 
     </style>
@@ -153,7 +153,7 @@
 
         
 
-<div class="flex flex-col md:flex-row items-center justify-between">
+        <div class="flex flex-col md:flex-row items-center justify-between">
             <div class="flex-grow w-full md:w-auto mb-4 md:mb-0">
                 <label for="numTables" class="block text-lg font-medium text-gray-700 mb-1">Número de Tablas a Generar (4 Cartas por Tabla):</label>
                 <input type="number" id="numTables" value="1" min="1" class="mt-1 block w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-[#A0388A] focus:border-[#A0388A] text-xl" placeholder="Ej: 100 para 400 cartas">
@@ -170,7 +170,7 @@
     <div id="output-container" class="space-y-12 mb-20">
         
 
-</div>
+    </div>
 
     <script>
         const generatedCardHashes = new Set(); 
@@ -215,7 +215,8 @@
                 const colG = generateColumn(46, 60, 5);
                 const colO = generateColumn(61, 75, 5);
 
-                // Reconstruir la lista de números en el orden de lectura de la carta
+                // Reconstruir la lista de números en el orden de lectura de la carta (por fila, luego por columna)
+                // Columna 1 (B) -> Columna 2 (I) -> Columna 3 (N) -> Columna 4 (G) -> Columna 5 (O)
                 cardNumbers = [];
                 for (let i = 0; i < 5; i++) {
                     cardNumbers.push(colB[i]);
@@ -259,6 +260,7 @@
             for (let i = 0; i < 25; i++) { // 25 celdas
                 const number = cardNumbers[i];
                 if (number === 0) {
+                    // El espacio libre, que es la imagen en tu diseño, se marca como "LOGO"
                     cellsHTML += `<div class="card-cell-number free-space">LOGO</div>`; 
                 } else {
                     cellsHTML += `<div class="card-cell-number">${number}</div>`;
@@ -289,7 +291,7 @@
                         ${cardHTMLs[3]}
                     </div>
                 </div>
-                <div class="flex justify-center mt-4 mb-8">
+                <div class="flex justify-center mt-4 mb-8 no-print">
                     <button onclick="downloadTable('${tableId}')" class="generate-button">
                         Descargar Tabla N°${formattedTableNumber} (PNG)
                     </button>
@@ -352,11 +354,11 @@
                 if (generationSuccess) {
                     renderCardTable(cardHTMLs);
                     tablesGeneratedCount++;
+                    // Usar setTimeout para evitar el bloqueo del navegador en grandes cantidades
                     setTimeout(generateNextTableAsync, 0); 
                 } else {
                     generateBtn.disabled = false;
                     generateBtn.textContent = 'Generar Tablas';
-                    // Revertir el contador de cartas si falló la generación de la tabla
                     currentCardNumber = tableStartCardNumber;
                 }
             }
@@ -370,16 +372,17 @@
             
             showMessage(`Preparando descarga de Tabla ${tableId.split('-')[2]}...`, false);
 
-            // Esconder temporalmente los controles de la aplicación
+            // Ocultar temporalmente los elementos de la interfaz de usuario para la captura
             const appContainer = document.querySelector('.app-container');
             const outputTitleElement = document.getElementById('outputTitle');
-            const otherTables = Array.from(outputContainer.children).filter(child => child.id !== tableId && child.tagName !== 'BUTTON');
+            const downloadButtons = document.querySelectorAll('.generate-button');
             
             appContainer.classList.add('temp-hide');
             outputTitleElement.classList.add('temp-hide');
-            otherTables.forEach(table => table.classList.add('temp-hide'));
+            downloadButtons.forEach(btn => btn.classList.add('temp-hide'));
 
-            const scaleFactor = 1; 
+            // Escala 2 para duplicar la resolución de la imagen (1788*2 x 2526*2)
+            const scaleFactor = 2; 
             
             html2canvas(element, {
                 scale: scaleFactor, 
@@ -396,13 +399,12 @@
                 showMessage(`Tabla ${tableId.split('-')[2]} descargada.`, false);
             }).catch(error => {
                 console.error('Error al intentar descargar la tabla:', error);
-                // NOTA: EL ERROR AHORA MENCIONA 'diseño1.png'
-                showMessage(`Error al descargar la tabla: ${error.message}. Verifica que 'diseño1.png' existe.`, true);
+                showMessage(`Error al descargar la tabla. Asegúrate de que tu imagen de fondo 'diseño1.png' esté cargada correctamente.`, true);
             }).finally(() => {
                 // Volver a mostrar todos los elementos
                 appContainer.classList.remove('temp-hide');
                 outputTitleElement.classList.remove('temp-hide');
-                otherTables.forEach(table => table.classList.remove('temp-hide'));
+                downloadButtons.forEach(btn => btn.classList.remove('temp-hide'));
             });
         }
 
@@ -418,3 +420,4 @@
     </script>
 </body>
 </html>
+
