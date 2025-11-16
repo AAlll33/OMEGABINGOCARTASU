@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Cartas de Bingo Personalizado</title>
     
-    <!-- Carga de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Carga de html2canvas -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         /* Define la fuente Arial Black para los números y Arial normal para la numeración */
@@ -25,7 +23,10 @@
             width: 1788px; /* ANCHO FIJO DEL DISEÑO */
             height: 2526px; /* ALTO FIJO DEL DISEÑO */
             margin: 20px auto;
-            background-image: url('diseño1.png'); /* ¡TU IMAGEN DE FONDO DEBE LLAMARSE ASÍ! */
+            /* ********** CORRECCIÓN AQUÍ ********** */
+            /* Se cambia de 'diseño1.png' a 'diseño1.jpg' para que coincida con tu archivo. */
+            background-image: url('diseño1.jpg'); 
+            /* ************************************* */
             background-size: 100% 100%;
             background-repeat: no-repeat;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
@@ -147,7 +148,7 @@
         <header class="text-center py-4 mb-4">
             <h1 class="text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo Personalizado</h1>
             <p class="text-gray-600 mt-2">Sistema de superposición de números, listo para tu diseño de 1788 x 2526 píxeles.</p>
-            <p class="text-red-500 font-semibold mt-4">¡SOLO CAMBIA EL DISEÑO! Asegúrate de que tu imagen de fondo se llame `diseño1.png`.</p>
+            <p class="text-red-500 font-semibold mt-4">¡SOLO CAMBIA EL DISEÑO! Asegúrate de que tu imagen de fondo se llame `diseño1.jpg`.</p>
         </header>
 
         
@@ -266,11 +267,9 @@
 
             return `
                 <div class="bingo-card-wrapper">
-                    <!-- Cuadrícula de 5x5 de números -->
                     <div class="card-cells-grid">
                         ${cellsHTML}
                     </div>
-                    <!-- Numeración N°0001 / N°0002 / N°0003 / N°0004... en la barra inferior -->
                     <div class="card-table-number-individual">N°${formattedNumber}</div>
                 </div>
             `;
@@ -397,7 +396,7 @@
                 showMessage(`Tabla ${tableId.split('-')[2]} descargada.`, false);
             }).catch(error => {
                 console.error('Error al intentar descargar la tabla:', error);
-                showMessage(`Error al descargar la tabla: ${error.message}. Verifica que 'diseño1.png' existe.`, true);
+                showMessage(`Error al descargar la tabla: ${error.message}. Verifica que 'diseño1.jpg' existe.`, true);
             }).finally(() => {
                 // Volver a mostrar todos los elementos
                 appContainer.classList.remove('temp-hide');
