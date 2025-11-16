@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Cartas de Bingo Maestro</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+    
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         /* Define las fuentes necesarias */
@@ -66,10 +68,9 @@
             width: 100%;
             height: 100%;
             
-            /* AJUSTE CLAVE PARA LA ALINEACIÓN PERFECTA DE LOS NÚMEROS */
-            /* Estos valores empíricos están optimizados para tu diseño */
-            padding-top: 13.0%; 
-            padding-bottom: 9.0%; 
+            /* AJUSTE CLAVE PARA LA ALINEACIÓN DEFINITIVA DE LOS NÚMEROS (Cuadros Blancos) */
+            padding-top: 13.5%; /* Ligeramente aumentado */
+            padding-bottom: 8.5%; /* Ligeramente reducido */
             padding-left: 2.5%; 
             padding-right: 2.5%; 
             
@@ -92,22 +93,16 @@
             line-height: 1;
         }
         
-        /* Espacio libre (sin texto visible) */
+        /* Espacio libre (sin texto visible, solo el logo) */
         .free-space {
             color: transparent; 
         }
 
-        /* --- IDENTIFICADORES DE CARTA (N°0001, N°0002, etc. - ABAJO) --- */
-        /* ESTA CLASE HA SIDO ELIMINADA DEL HTML PARA NO MOSTRAR LOS NÚMEROS INFERIORES */
-        /* .card-table-number-individual {
-            display: none; 
-        } */
-
-        /* --- IDENTIFICADORES DE TABLA (137, 138, etc. - ARRIBA Y ABAJO) --- */
+        /* --- IDENTIFICADORES DE TABLA (137, 138, etc. - BARRAS SUPERIORES) --- */
         .top-id {
             position: absolute;
             /* TAMAÑO DE FUENTE AJUSTADO PARA COINCIDIR CON TU EJEMPLO */
-            font-size: 100px; /* Incrementado para mejor visibilidad */
+            font-size: 100px; 
             font-weight: 900;
             color: #FFFFFF; 
             font-family: 'Arial Black', sans-serif;
@@ -116,21 +111,21 @@
             line-height: 1; 
         }
         
-        /* Posiciones FINAS para los IDs superiores e inferiores */
+        /* Posiciones FINAS para los IDs superiores e inferiores (Alineados en las barras) */
         .top-id.top-half.left {
-            top: 5.0%; 
+            top: 4.8%; /* Ajuste vertical fino */
             left: 10.0%;
         }
         .top-id.top-half.right {
-            top: 5.0%; 
+            top: 4.8%; /* Ajuste vertical fino */
             right: 10.0%;
         }
         .top-id.bottom-half.left {
-            top: 51.0%; 
+            top: 50.8%; /* Ajuste vertical fino */
             left: 10.0%; 
         }
         .top-id.bottom-half.right {
-            top: 51.0%; 
+            top: 50.8%; /* Ajuste vertical fino */
             right: 10.0%; 
         }
 
@@ -225,7 +220,7 @@
             font-size: 80px; 
         }
         .bingo-table-card .top-id {
-            font-size: 100px; /* Ajustado para la vista previa */
+            font-size: 100px; 
             text-shadow: 4px 4px 6px rgba(0,0,0,0.8);
         }
         
@@ -255,13 +250,15 @@
     <h2 id="outputTitle" class="text-xl md:text-3xl font-bold text-white border-b border-white/50 pb-2 mb-8 hidden">Tablas Generadas para Descargar (Vista Previa Proporcional y Alineada):</h2>
     
     <div id="output-container">
-        </div>
+        
+
+</div>
 
     <script>
         const generatedCardHashes = new Set(); 
-        let currentCardNumber = 1; // N°0001, N°0002... (Ya no se usa para mostrar, solo para la lógica interna)
-        let currentTableNumber = 1; // 1, 2, 3... (Usado para calcular los IDs superiores 137, 138...)
-        const BASE_ID_OFFSET = 136; // Si la primera carta es 137, la tabla 1 empieza en 136 + 1.
+        let currentCardNumber = 1; // Contador para el número de carta (1, 2, 3...)
+        let currentTableNumber = 1; // Contador para el número de tabla
+        const BASE_ID_OFFSET = 136; // El ID de la primera carta es 137, por lo que empezamos en 136.
 
         const messagesDiv = document.getElementById('messages');
         const outputContainer = document.getElementById('output-container');
@@ -322,6 +319,7 @@
                 }
 
                 // Generar el hash único con los 24 números ordenados
+                // Esto asegura que dos cartas con los mismos números pero ordenados diferentes no se consideren iguales (aunque la lógica de Bingo ya asegura un orden por columna)
                 cardHash = [ ...colB, ...colI, ...colN_temp, ...colG, ...colO ].sort((a, b) => a - b).join('-');
                 
                 attempts++;
@@ -337,18 +335,15 @@
             return { numbers: cardNumbers, hash: cardHash };
         }
 
-        /**
-         * Crea el HTML de los números para una sola carta de bingo.
-         * Se elimina el "N°0001" de aquí.
-         */
+        /** Crea el HTML de los números para una sola carta de bingo. */
         function createCardHTML(totalCardNumber, cardData) {
             const cardNumbers = cardData.numbers;
-            // const formattedNumber = String(totalCardNumber).padStart(4, '0'); // Ya no se usa
 
             let cellsHTML = '';
             for (let i = 0; i < 25; i++) { 
                 const number = cardNumbers[i];
                 if (number === 0) {
+                    // Texto 'LOGO' invisible, para que ocupe el espacio y se vea la imagen de fondo.
                     cellsHTML += `<div class="card-cell-number free-space">LOGO</div>`; 
                 } else {
                     cellsHTML += `<div class="card-cell-number">${number}</div>`;
@@ -360,16 +355,17 @@
                     <div class="card-cells-grid">
                         ${cellsHTML}
                     </div>
-                    </div>
+                </div>
             `;
         }
 
         /** Renderiza una tabla completa (el diseño de 4 cartas con tu fondo) y su botón de descarga. */
         function renderCardTable(cardHTMLs) {
             const tableId = `bingo-table-${currentTableNumber}`;
+            // El número de tabla en el botón de descarga debe ser simple (1, 2, 3...) como pediste:
             const formattedTableNumber = String(currentTableNumber).padStart(4, '0');
             
-            // Cálculo de los IDs superiores: 137, 138, 139, 140, 141...
+            // Cálculo de los IDs superiores e inferiores (137, 138, 139, 140, etc.)
             const cardIndexStart = BASE_ID_OFFSET + ((currentTableNumber - 1) * 4);
             const id1 = cardIndexStart + 1; // Superior izquierda
             const id2 = cardIndexStart + 2; // Superior derecha
@@ -381,9 +377,11 @@
                     <div class="preview-wrapper">
                         <div id="${tableId}" class="bingo-template">
                             
+                            <!-- IDs Superiores - ALINEADOS EN LA BARRA -->
                             <div class="top-id top-half left">${id1}</div>
                             <div class="top-id top-half right">${id2}</div>
                             
+                            <!-- Cuadrícula de Cartas - ALINEADOS EN LOS CUADROS BLANCOS -->
                             <div class="bingo-grid">
                                 ${cardHTMLs[0]}
                                 ${cardHTMLs[1]}
@@ -391,6 +389,7 @@
                                 ${cardHTMLs[3]}
                             </div>
 
+                            <!-- IDs Inferiores - ALINEADOS EN LA BARRA -->
                             <div class="top-id bottom-half left">${id3}</div>
                             <div class="top-id bottom-half right">${id4}</div>
                         </div>
