@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Cartas de Bingo Maestro</title>
     
+    <!-- Tailwind CSS para la interfaz (no afecta el diseño de la carta) -->
+    <script src="https://cdn.tailwindcss.com"></script>
     
-<script src="https://cdn.tailwindcss.com"></script>
-    
-    
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Librería para capturar el HTML en PNG -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         /* Define las fuentes necesarias */
@@ -35,7 +35,7 @@
             background-repeat: no-repeat;
             overflow: hidden;
 
-            /* Borde de debug que puedes quitar una vez funcione */
+            /* Puedes quitar el borde de debug una vez la alineación sea perfecta */
             /* border: 5px solid rgba(255, 255, 255, 0.1); */ 
         }
 
@@ -50,7 +50,7 @@
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
             
-            /* PADDING AJUSTADO AL MILÍMETRO para tu plantilla */
+            /* PADDING AJUSTADO AL MILÍMETRO para tu plantilla (Posicionamiento del bloque de 4 cartas) */
             padding: 24.2% 8.5% 1.5% 8.5%; 
             gap: 2%; 
         }
@@ -69,28 +69,31 @@
             height: 100%;
             
             /* AJUSTE CLAVE PARA LA ALINEACIÓN DEFINITIVA DE LOS NÚMEROS (Cuadros Blancos) */
-            padding-top: 13.5%; /* Ligeramente aumentado */
-            padding-bottom: 8.5%; /* Ligeramente reducido */
+            /* Controla el espacio entre el borde de la carta y el inicio de la cuadrícula de números */
+            padding-top: 13.5%; 
+            padding-bottom: 8.5%; 
             padding-left: 2.5%; 
             padding-right: 2.5%; 
             
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             grid-template-rows: repeat(5, 1fr); 
-            gap: 0; /* Sin espacio entre las celdas para un ajuste preciso */
+            gap: 0; 
         }
 
         /* Celda individual con el número de Bingo */
         .card-cell-number {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            /* TAMAÑO DE FUENTE AJUSTADO */
+            /* CAMBIOS CRÍTICOS PARA CENTRADO VERTICAL/HORIZONTAL */
+            justify-content: center; /* Centrado horizontal */
+            align-items: center; /* Centrado vertical */
+            
+            /* TAMAÑO DE FUENTE Y ESTILO */
             font-size: 80px; 
             font-weight: bold;
             color: #000000; 
             font-family: Arial, sans-serif; 
-            line-height: 1;
+            line-height: 1; /* Asegura que la altura de línea no interfiera con el centrado */
         }
         
         /* Espacio libre (sin texto visible, solo el logo) */
@@ -101,7 +104,6 @@
         /* --- IDENTIFICADORES DE TABLA (137, 138, etc. - BARRAS SUPERIORES) --- */
         .top-id {
             position: absolute;
-            /* TAMAÑO DE FUENTE AJUSTADO PARA COINCIDIR CON TU EJEMPLO */
             font-size: 100px; 
             font-weight: 900;
             color: #FFFFFF; 
@@ -112,20 +114,21 @@
         }
         
         /* Posiciones FINAS para los IDs superiores e inferiores (Alineados en las barras) */
+        /* Manteniendo estos ajustes de la versión anterior ya que parecían estar bien */
         .top-id.top-half.left {
-            top: 4.8%; /* Ajuste vertical fino */
+            top: 4.8%; 
             left: 10.0%;
         }
         .top-id.top-half.right {
-            top: 4.8%; /* Ajuste vertical fino */
+            top: 4.8%; 
             right: 10.0%;
         }
         .top-id.bottom-half.left {
-            top: 50.8%; /* Ajuste vertical fino */
+            top: 50.8%; 
             left: 10.0%; 
         }
         .top-id.bottom-half.right {
-            top: 50.8%; /* Ajuste vertical fino */
+            top: 50.8%; 
             right: 10.0%; 
         }
 
@@ -231,7 +234,7 @@
     <div class="app-container mb-8">
         <header class="text-center py-4 mb-4">
             <h1 class="text-2xl md:text-4xl font-extrabold text-[#A0388A]">Generador de Cartas de Bingo MAESTRO</h1>
-            <p class="text-gray-600 mt-2 text-sm md:text-base">Alineación perfecta para tu diseño de 1788 x 2526 píxeles.</p>
+            <p class="text-gray-600 mt-2 text-sm md:text-base">Alineación perfecta al centro de los cuadros blancos.</p>
             <p class="text-red-500 font-semibold mt-4 text-xs md:text-sm">¡CRÍTICO! Asegúrate de que tu imagen de fondo se llame `diseño1.png` y esté en la misma carpeta.</p>
         </header>
 
@@ -319,7 +322,6 @@
                 }
 
                 // Generar el hash único con los 24 números ordenados
-                // Esto asegura que dos cartas con los mismos números pero ordenados diferentes no se consideren iguales (aunque la lógica de Bingo ya asegura un orden por columna)
                 cardHash = [ ...colB, ...colI, ...colN_temp, ...colG, ...colO ].sort((a, b) => a - b).join('-');
                 
                 attempts++;
@@ -362,7 +364,6 @@
         /** Renderiza una tabla completa (el diseño de 4 cartas con tu fondo) y su botón de descarga. */
         function renderCardTable(cardHTMLs) {
             const tableId = `bingo-table-${currentTableNumber}`;
-            // El número de tabla en el botón de descarga debe ser simple (1, 2, 3...) como pediste:
             const formattedTableNumber = String(currentTableNumber).padStart(4, '0');
             
             // Cálculo de los IDs superiores e inferiores (137, 138, 139, 140, etc.)
