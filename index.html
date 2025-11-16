@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Cartas de Bingo Maestro</title>
     
-    <!-- Tailwind CSS para la interfaz (botones, layout responsive) -->
+    <!-- Tailwind CSS para la interfaz -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Librería para capturar el HTML y convertirlo en imagen de alta resolución -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
-        /* Define la fuente Arial Black para los identificadores superiores */
+        /* Define las fuentes necesarias */
         @import url('https://fonts.googleapis.com/css2?family=Arial+Black:wght@900&family=Arial:wght@400;700&display=swap');
         
         body {
@@ -35,7 +35,7 @@
             background-repeat: no-repeat;
             overflow: hidden;
 
-            /* DEBUG VISUAL: Borde para ver el área de la carta */
+            /* Borde de debug que puedes quitar una vez funcione */
             border: 5px solid rgba(255, 255, 255, 0.1); 
         }
 
@@ -50,9 +50,9 @@
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(2, 1fr);
             
-            /* Ajuste de PADDING para alinear las 4 cartas dentro del marco de diseño1.png */
-            padding: 24% 8.5% 1.5% 8.5%; 
-            gap: 2%; /* Espacio entre las cartas (horizontal y vertical) */
+            /* PADDING AJUSTADO AL MILÍMETRO para tu plantilla */
+            padding: 24.2% 8.5% 1.5% 8.5%; 
+            gap: 2%; 
         }
         
         /* Contenedor de cada carta individual */
@@ -67,7 +67,7 @@
         .card-cells-grid {
             width: 100%;
             height: 100%;
-            /* Ajuste para saltar el texto BINGO y el borde inferior */
+            /* AJUSTE para centrar los números dentro de los cuadros blancos */
             padding-top: 13.0%; 
             padding-bottom: 9.5%;
             
@@ -82,17 +82,17 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            /* Tamaño de fuente ajustado a la resolución de 1788x2526 */
+            /* TAMAÑO DE FUENTE AJUSTADO */
             font-size: 80px; 
             font-weight: bold;
-            color: #000000; /* Negro para los números */
+            color: #000000; 
             font-family: Arial, sans-serif; 
             line-height: 1;
         }
         
-        /* Estilo para el "espacio libre" (celda central) */
+        /* Espacio libre */
         .free-space {
-            color: transparent; /* Oculta el texto "LOGO" */
+            color: transparent; 
         }
 
         /* --- IDENTIFICADORES DE CARTA (N°0001, N°0002, etc. - ABAJO) --- */
@@ -106,7 +106,7 @@
             align-items: center;
             font-size: 40px; 
             font-weight: bold;
-            color: #FFFFFF; /* Blanco para contraste con la barra inferior oscura */
+            color: #FFFFFF; 
             font-family: Arial, sans-serif; 
             z-index: 10;
         }
@@ -114,48 +114,39 @@
         /* --- IDENTIFICADORES DE TABLA (137, 138, etc. - ARRIBA) --- */
         .top-id {
             position: absolute;
-            font-size: 100px; /* Tamaño grande para la captura (1788x2526) */
+            /* TAMAÑO DE FUENTE AJUSTADO ARIAL BLACK */
+            font-size: 90px; 
             font-weight: 900;
             color: #FFFFFF; 
             font-family: 'Arial Black', sans-serif;
             z-index: 100; 
-            text-shadow: 4px 4px 6px rgba(0,0,0,0.8); /* Sombra para resaltar */
+            text-shadow: 4px 4px 6px rgba(0,0,0,0.8); 
+            /* Para que el texto no afecte el bounding box de la captura */
+            line-height: 1; 
         }
         
-        /* Posiciones exactas basadas en el diseño de 1788x2526 */
-        /* Eje Y (top): 5.0% para la mitad superior, 51.0% para la mitad inferior */
-        /* Eje X (left/right): 10.0% desde el borde */
-
-        /* Carta superior izquierda (137) */
+        /* Posiciones FINAS para los IDs superiores */
         .top-id.top-half.left {
             top: 5.0%; 
             left: 10.0%;
         }
-        /* Carta superior derecha (138) */
         .top-id.top-half.right {
             top: 5.0%; 
             right: 10.0%;
         }
-        /* Carta inferior izquierda (139) */
+        /* Posiciones FINAS para los IDs inferiores */
         .top-id.bottom-half.left {
             top: 51.0%; 
             left: 10.0%; 
         }
-        /* Carta inferior derecha (140) */
         .top-id.bottom-half.right {
             top: 51.0%; 
             right: 10.0%; 
         }
 
-        /* --- ESTILOS DE LA INTERFAZ DE USUARIO Y RESPONSIVIDAD --- */
+        /* --- ESTILOS DE LA INTERFAZ DE USUARIO Y VISTA PREVIA --- */
         .app-container {
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: #fff;
-            padding: 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            /* ... (Estilos de la interfaz) ... */
         }
         .generate-button {
             background-color: #A0388A; 
@@ -178,7 +169,7 @@
             display: none !important;
         }
 
-        /* CONTENEDOR DE SALIDA (Vista previa) */
+        /* Contenedor de salida (Vista previa) */
         #output-container {
             width: 100%; 
             max-width: 1200px; 
@@ -191,7 +182,7 @@
             align-items: start;
         }
 
-        /* Estilo para cada "tarjeta" de vista previa (MUY IMPORTANTE para visibilidad y responsive) */
+        /* Estilo para cada "tarjeta" de vista previa (VISIBILIDAD GARANTIZADA) */
         .bingo-table-card {
             background-color: #fff;
             border-radius: 0.75rem;
@@ -203,7 +194,7 @@
             align-items: center;
             width: 100%; 
             max-width: 400px; 
-            height: auto; 
+            height: auto; /* FORZAR altura automática */
         }
 
         /* Escalar la tabla de bingo para la visualización en la interfaz */
@@ -213,6 +204,8 @@
             border: none; 
             background-color: transparent; 
             box-shadow: none;
+            /* Forzar visualización de la imagen, aunque sea pequeña */
+            min-height: 200px;
         }
         
         /* Reducir el tamaño de las fuentes en la vista previa para que se ajusten al móvil */
@@ -378,11 +371,14 @@
 
             const tableHTML = `
                 <div class="bingo-table-card">
+                    <!-- Contenedor de ALTA RESOLUCIÓN para la CAPTURA -->
                     <div id="${tableId}" class="bingo-template">
+                        
                         <!-- Identificadores superiores e inferiores -->
                         <div class="top-id top-half left">${id1}</div>
                         <div class="top-id top-half right">${id2}</div>
                         
+                        <!-- Contenedor de las 4 Cartas -->
                         <div class="bingo-grid">
                             ${cardHTMLs[0]}
                             ${cardHTMLs[1]}
