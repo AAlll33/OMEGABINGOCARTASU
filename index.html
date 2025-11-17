@@ -45,9 +45,8 @@
             width: 100%;
             height: 100%;
             z-index: 10; 
-            /* !!! AJUSTE CLAVE DE ALINEACIÓN FINAL !!! 
-               Reducido a 200px para subir el bloque y alinear con la banda BINGO superior. */
-            padding: 200px 40px 40px 40px; /* <--- VALOR CLAVE AJUSTADO A 200px */
+            /* !!! AJUSTE CRUCIAL: REDUCIDO A 190PX !!! */
+            padding: 190px 40px 40px 40px; /* <--- VALOR CLAVE AJUSTADO A 190px */
             display: flex;
             flex-direction: column;
         }
@@ -98,7 +97,7 @@
         /* --- ENCABEZADO BINGO (INVISIBLE - SOLO ESPACIO) --- */
         .bingo-header {
             display: flex;
-            height: 40px; 
+            height: 30px; /* <--- AJUSTE CRUCIAL: REDUCIDO A 30px para subir la cuadrícula */
             opacity: 0; 
         }
 
@@ -139,10 +138,10 @@
             height: 4243px !important; 
         }
 
-        /* !!! AJUSTE EN ALTA RESOLUCIÓN FINAL !!! (Proporcional al ajuste de 200px) */
+        /* !!! AJUSTE EN ALTA RESOLUCIÓN (Proporcional a 190px) !!! */
         .high-res-capture #generated-content-wrapper {
-             /* 858px (aprox) = 200px * (4243/990) */
-             padding: 858px 170px 170px 170px !important; /* <--- VALOR CLAVE HR AJUSTADO A 858px */
+             /* 815px (aprox) = 190px * (4243/990) */
+             padding: 815px 170px 170px 170px !important; /* <--- AJUSTE CLAVE HR A 815px */
         }
         
         .high-res-capture .bingo-cell {
@@ -159,6 +158,10 @@
         .high-res-capture .card-id-label {
             font-size: 4rem !important; 
         }
+        
+        .high-res-capture .bingo-header {
+             height: 128px !important; /* 30px * (4243/990) ~ 128px */
+        }
 
         .high-res-capture .bingo-grid {
              transform: none !important; 
@@ -171,7 +174,7 @@
         const BINGO_RANGES = {
             B: [1, 15], I: [16, 30], N: [31, 45], G: [46, 60], O: [61, 75]
         };
-        let cardStartId = 181; // Ajustado al valor de tu última captura
+        let cardStartId = 185; // Ajustado al valor de tu última captura
         let currentSheetId = 1; 
 
         function generateColumnNumbers(min, max) {
@@ -350,7 +353,7 @@
             <label for="start-id-input" class="text-gray-700 font-medium">
                 Siguiente Carta N°:
             </label>
-            <input type="number" id="start-id-input" value="181" min="1"
+            <input type="number" id="start-id-input" value="185" min="1"
                    class="w-32 p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center">
             
             <button id="btn-generate-sheet" class="px-6 py-2 rounded-lg bg-indigo-600 text-white font-bold whitespace-nowrap shadow-md hover:bg-indigo-700 transition">
@@ -387,9 +390,9 @@
     </div>
     
     <div class="max-w-4xl mx-auto p-6 mt-6 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg">
-        <p class="font-bold">✅ Últimos Ajustes de Alineación Aplicados</p>
+        <p class="font-bold">✅ Ajuste de Alineación Fino</p>
         <p class="text-sm mt-2">
-            He ajustado el **padding superior** a <code class="font-mono">200px</code> para subir las cartas. Esto debería alinearlas perfectamente con la banda BINGO de tu diseño.
+            He ajustado el **padding superior** a <code class="font-mono">190px</code> y el **encabezado invisible** a <code class="font-mono">30px</code>. Esto debería subir las cuadrículas de números de las cartas superiores a la posición correcta, alineándolas perfectamente con la banda BINGO de tu diseño.
         </p>
     </div>
 
