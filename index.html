@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Planillas de 4 Cartas</title>
-    <!-- Carga de Tailwind CSS para un diseño limpio y responsive -->
+    <title>Generador de Planillas de 4 Cartas de Bingo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* --- CONFIGURACIÓN DE LA PLANTILLA GENERAL --- */
         :root {
-            /* Colores y fuentes SOLO para la superposición de números y IDs */
-            --card-number-color: #000000; /* Color de los números de la tarjeta */
-            --id-text-color: #000000; /* Color del texto del ID (ajusta según tu fondo) */
+            --card-number-color: #000000; 
+            --id-text-color: #000000; 
             --card-font: 'Arial Black', Gadget, sans-serif;
             --main-font: 'Inter', sans-serif;
         }
@@ -24,11 +22,9 @@
         #sheet-container {
             width: 700px; 
             margin: 0 auto;
-            /* Se establece el tamaño fijo para que coincida con tu diseño PNG */
             height: 990px; 
             position: relative;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            /* Importante: el padding se mueve a los contenedores internos si es necesario */
         }
         
         /* Imagen de Fondo de Plantilla (Tu diseño de Graphionica) */
@@ -38,9 +34,9 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1; /* Asegura que tu diseño esté en el fondo */
+            z-index: 1; 
             border-radius: 1rem;
-            object-fit: cover; /* Asegura que cubra el contenedor */
+            object-fit: cover;
         }
         
         /* Contenedor para todos los elementos generados (números y IDs) */
@@ -48,72 +44,61 @@
             position: relative;
             width: 100%;
             height: 100%;
-            z-index: 10; /* Asegura que la data esté encima del fondo */
-            padding: 20px; /* Padding de la planilla, ajústalo para tu PNG */
+            z-index: 10; 
+            /* !!! AJUSTE CLAVE DE ALINEACIÓN (Top Right Bottom Left) !!! 
+               295px BAJA el contenido para que las cartas comiencen donde termina el BINGO.
+            */
+            padding: 295px 40px 40px 40px; 
             display: flex;
             flex-direction: column;
-        }
-
-        /* --- ENCABEZADO SUPERIOR (Ahora solo un espacio de control) --- */
-        .sheet-header {
-            /* Se mantiene el espacio para que la cuadrícula se posicione correctamente */
-            height: 100px; 
-            opacity: 0; /* Lo hacemos invisible, ya que está en tu PNG */
         }
 
         /* --- CONTENEDOR DE LA CUADRÍCULA DE CARTAS (2x2) --- */
         .multi-card-output {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px; /* Espacio entre las cartas */
-            flex-grow: 1; /* Para ocupar el resto del espacio vertical */
+            gap: 30px; /* Espacio entre las 4 cartas aumentado ligeramente */
+            flex-grow: 1; 
         }
         
         /* --- ESTILO DE CADA CARTA DENTRO DE LA PLANILLA --- */
         .single-card-box {
             position: relative;
-            /* Hacemos transparente el fondo y bordes para que se vea tu PNG */
             background-color: transparent; 
             border: none; 
-            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
 
-        /* --- CONTENEDOR DE ID (encima del BINGO que está en tu PNG) --- */
+        /* --- CONTENEDOR DE ID (donde van los números 161, 162, etc.) --- */
         .card-id-wrapper {
             display: flex;
             justify-content: flex-start; 
             align-items: center;
-            height: 30px; 
+            /* Se pone una altura negativa para subir el ID un poco, 
+               ya que en tu diseño no hay mucho espacio arriba de la cuadrícula. */
+            height: 0px; 
             padding: 0 5px; 
-            background-color: transparent; /* No fondo */
+            /* Posicionamiento para que el ID se vea sobre el espacio BINGO */
+            transform: translateY(-40px);
         }
 
         /* --- IDENTIFICADOR DE CARTA (137, 138, etc.) --- */
         .card-id-label {
-            /* Estilo para que se vea bien sobre tu fondo (ajusta color y fondo) */
-            background-color: transparent; 
             color: var(--id-text-color);
             padding: 0.1rem 0.5rem;
-            font-weight: 900; /* Más grosor para que destaque */
-            font-size: 0.9rem;
+            font-weight: 900; 
+            font-size: 1.1rem; 
+            line-height: 1; 
+            background-color: white; /* Para que el ID se vea bien sobre el fondo BINGO */
             border-radius: 0.3rem;
-            /* Si necesitas que el ID se posicione exactamente sobre una zona de tu PNG: */
-            /* position: absolute; top: 5px; left: 5px; */
         }
 
-        /* --- ENCABEZADO BINGO (LO ELIMINAMOS O HACEMOS INVISIBLE) --- */
+        /* --- ENCABEZADO BINGO (INVISIBLE - SOLO ESPACIO) --- */
         .bingo-header {
             display: flex;
-            height: 40px;
-            opacity: 0; /* Lo hacemos invisible, asumiendo que está en tu PNG */
-        }
-        .header-letter {
-            flex-grow: 1;
-            /* Opcional: si quieres usarlo como referencia de altura */
-            background-color: transparent;
-            border: none;
+            height: 40px; 
+            opacity: 0; 
         }
 
         /* --- CUADRÍCULA DE NÚMEROS (5x5) --- */
@@ -122,6 +107,8 @@
             grid-template-columns: repeat(5, 1fr);
             aspect-ratio: 1 / 1; 
             width: 100%;
+            /* Empuja la cuadrícula hacia abajo para compensar la altura del ID */
+            transform: translateY(15px);
         }
         
         /* Estilo de cada celda de número */
@@ -131,74 +118,60 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            /* Hacemos transparente el fondo y bordes */
             background-color: transparent; 
             border: 1px solid transparent; 
-            font-size: 1.1rem;
-            font-weight: 900; /* Más grosor para los números */
+            font-size: 1.4rem; 
+            font-weight: 900; 
             color: var(--card-number-color);
             font-family: var(--card-font);
+            line-height: 1; 
         }
 
-        /* Estilo para la casilla central libre */
+        /* Estilo para la casilla central libre (con logo) */
         .free-space {
-             /* Hacemos transparente para que se vea el logo en tu PNG */
              background-color: transparent; 
-             color: transparent; /* Hacemos el texto del logo invisible */
-             font-size: 0.75rem;
+             color: transparent; /* El logo está en tu PNG, hacemos el texto invisible */
         }
         
         /* --- ESTILOS PARA ALTA RESOLUCIÓN (DESCARGA) --- */
-        /* Asegúrate de que tu PNG esté en alta resolución para que se vea bien aquí */
         .high-res-capture {
             width: 3000px !important; 
-            height: 4200px !important; /* Ajuste estimado para mantener ratio A4 (700x990) */
-            padding: 100px !important; 
+            height: 4243px !important; 
         }
 
+        /* !!! AJUSTE EN ALTA RESOLUCIÓN !!! (Proporcional al ajuste de 295px) */
         .high-res-capture #generated-content-wrapper {
-             padding: 85px !important; /* Ajusta este padding para alinear los números con tu fondo */
-        }
-        
-        /* Escala la etiqueta de ID para alta resolución */
-        .high-res-capture .card-id-label {
-            font-size: 3rem !important;
-            padding: 0.5rem 1.5rem !important;
-        }
-        
-        .high-res-capture .card-id-wrapper {
-             height: 100px !important;
-        }
-        
-        /* Hacemos que la letra de BINGO sea un poco más grande para referencia si la necesitamos */
-        .high-res-capture .header-letter {
-            font-size: 3rem !important; 
-            height: 120px !important;
+             /* 1264px = 295px * (4243/990) --> Aproximadamente 1264px */
+             padding: 1264px 170px 170px 170px !important; 
         }
         
         .high-res-capture .bingo-cell {
-            font-size: 4.5rem !important; /* Números grandes */
+            font-size: 6rem !important; 
+        }
+        
+        .high-res-capture .card-id-wrapper {
+             height: 0px !important;
+             transform: translateY(-170px) !important; /* Mueve el ID hacia arriba en HR */
+        }
+        
+        .high-res-capture .card-id-label {
+            font-size: 4rem !important; 
+        }
+
+        .high-res-capture .bingo-grid {
+             transform: translateY(60px) !important; /* Baja la cuadrícula para compensar el ID */
         }
     </style>
-    <!-- Carga de la librería html2canvas para convertir HTML a imagen (PNG) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        // --- CONFIGURACIÓN Y LÓGICA DE BINGO ---
+        // --- LÓGICA DE BINGO (SIN CAMBIOS) ---
 
         const BINGO_RANGES = {
-            B: [1, 15],
-            I: [16, 30],
-            N: [31, 45],
-            G: [46, 60],
-            O: [61, 75]
+            B: [1, 15], I: [16, 30], N: [31, 45], G: [46, 60], O: [61, 75]
         };
-        // Índice inicial para la numeración de las cartas (ej: 137, 138...)
-        let cardStartId = 137; 
-        let currentSheetId = 1;
+        let cardStartId = 165; 
+        let currentSheetId = 7; 
 
-        /**
-         * Genera 5 números únicos y ordenados para una columna de Bingo.
-         */
         function generateColumnNumbers(min, max) {
             const range = Array.from({ length: max - min + 1 }, (_, i) => i + min);
             for (let i = range.length - 1; i > 0; i--) {
@@ -208,9 +181,6 @@
             return range.slice(0, 5).sort((a, b) => a - b);
         }
 
-        /**
-         * Genera una carta de Bingo 5x5 completa.
-         */
         function generateBingoCard(id) {
             const columns = ['B', 'I', 'N', 'G', 'O'];
             const columnData = columns.reduce((acc, key) => {
@@ -219,17 +189,14 @@
                 return acc;
             }, {});
 
-            const card = {
-                id: id,
-                data: []
-            };
+            const card = { id: id, data: [] };
 
-            for (let r = 0; r < 5; r++) { // Filas
-                for (let c = 0; c < 5; c++) { // Columnas
+            for (let r = 0; r < 5; r++) { 
+                for (let c = 0; c < 5; c++) {
                     const key = columns[c];
                     let number;
                     if (c === 2 && r === 2) {
-                        number = 0; // Casilla libre (usaremos 0 como marcador)
+                        number = 0; 
                     } else {
                         number = columnData[key][r];
                     }
@@ -239,50 +206,35 @@
             return card;
         }
 
-        /**
-         * Genera 4 cartas consecutivas.
-         */
         function generateMultiCardData() {
             const cards = [];
             for (let i = 0; i < 4; i++) {
-                // Usamos el ID consecutivo
                 const cardId = cardStartId + i; 
                 cards.push(generateBingoCard(cardId));
             }
-            cardStartId += 4; // Incrementamos el ID de inicio para la próxima planilla
+            cardStartId += 4; 
             return cards;
         }
         
-        /**
-         * Renderiza una carta individual dentro del contenedor de la planilla.
-         */
         function renderSingleCard(cardData) {
             const cardBox = document.createElement('div');
             cardBox.className = 'single-card-box';
 
-            // Contenedor de IDs (encima de BINGO)
+            // Contenedor de IDs
             const idWrapper = document.createElement('div');
             idWrapper.className = 'card-id-wrapper';
             
-            // Etiqueta de ID (ej: 137)
+            // Etiqueta de ID
             const idLabelLeft = document.createElement('div');
             idLabelLeft.className = 'card-id-label';
             idLabelLeft.textContent = cardData.id;
             
             idWrapper.appendChild(idLabelLeft);
-
             cardBox.appendChild(idWrapper);
 
-
-            // Encabezado BINGO (Invisible - solo para mantener la estructura de altura)
+            // Encabezado BINGO (Invisible - solo espacio)
             const header = document.createElement('div');
             header.className = 'bingo-header';
-            ['B', 'I', 'N', 'G', 'O'].forEach(letter => {
-                const letterDiv = document.createElement('div');
-                letterDiv.className = 'header-letter';
-                letterDiv.textContent = letter;
-                header.appendChild(letterDiv);
-            });
             cardBox.appendChild(header);
 
             // Cuadrícula de Números
@@ -294,7 +246,6 @@
                 cell.className = 'bingo-cell';
                 
                 if (number === 0) {
-                    // Casilla central libre
                     cell.classList.add('free-space');
                     cell.textContent = 'LOGO'; 
                 } else {
@@ -307,9 +258,6 @@
             return cardBox;
         }
 
-        /**
-         * Renderiza la planilla completa de 4 cartas.
-         */
         function renderMultiCards(cards) {
             const container = document.getElementById('multi-card-output');
             const sheetIdDisplay = document.getElementById('sheet-id-number');
@@ -320,23 +268,16 @@
             });
             
             sheetIdDisplay.textContent = String(currentSheetId).padStart(4, '0');
-            // Almacenar el ID de la planilla para la descarga
             container.dataset.sheetId = currentSheetId;
         }
 
-        /**
-         * Genera una nueva planilla de 4 cartas y la renderiza.
-         */
         function generateAndRenderNewSheet() {
             const cards = generateMultiCardData();
             renderMultiCards(cards);
-            document.getElementById('start-id-input').value = cardStartId; // Actualiza el ID de inicio
+            document.getElementById('start-id-input').value = cardStartId; 
             currentSheetId++;
         }
 
-        /**
-         * Captura la planilla de 4 cartas a alta resolución y la descarga como PNG.
-         */
         async function downloadSheet() {
             const sheetContainer = document.getElementById('sheet-container');
             const sheetId = sheetContainer.querySelector('#multi-card-output').dataset.sheetId || '0001';
@@ -364,8 +305,6 @@
                 link.href = image;
                 link.click();
                 
-                console.log(`Planilla N°${sheetId} descargada con éxito.`);
-
             } catch (error) {
                 console.error("Error al generar la imagen de la planilla:", error);
             } finally {
@@ -381,10 +320,11 @@
              document.getElementById('btn-generate-sheet').onclick = generateAndRenderNewSheet;
              document.getElementById('btn-download-sheet').onclick = downloadSheet;
              
-             // Generar la primera planilla al cargar
+             document.getElementById('start-id-input').value = cardStartId;
+             document.getElementById('sheet-id-number').textContent = String(currentSheetId).padStart(4, '0');
+             
              generateAndRenderNewSheet();
              
-             // Lógica para actualizar el ID de inicio si el usuario lo cambia
              document.getElementById('start-id-input').addEventListener('change', (e) => {
                 const newId = parseInt(e.target.value, 10);
                 if (!isNaN(newId) && newId > 0) {
@@ -404,48 +344,38 @@
             Generador de Planilla de 4 Cartas de Bingo
         </h1>
 
-        <!-- Controles de Configuración -->
         <div class="flex flex-col sm:flex-row gap-4 mb-6 items-center justify-center">
             <label for="start-id-input" class="text-gray-700 font-medium">
                 Siguiente Carta N°:
             </label>
-            <input type="number" id="start-id-input" value="137" min="1"
+            <input type="number" id="start-id-input" value="165" min="1"
                    class="w-32 p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center">
             
             <button id="btn-generate-sheet" class="px-6 py-2 rounded-lg bg-indigo-600 text-white font-bold whitespace-nowrap shadow-md hover:bg-indigo-700 transition">
-                Generar Planilla N° <span id="sheet-id-number">0001</span>
+                Generar Planilla N° <span id="sheet-id-number">0007</span>
             </button>
         </div>
         
-        <!-- Contenedor de la Planilla (El área que se descargará) -->
         <div id="sheet-container">
             <p class="text-center text-sm mb-4 text-gray-600 font-semibold">
                 PLANILLA DE REFERENCIA
             </p>
 
-            <!-- 1. IMAGEN DE FONDO (TU DISEÑO PNG) -->
-            <!-- Asegúrate de subir tu diseño PNG con este nombre y relación de aspecto -->
             <img id="background-template" src="plantilla_bingo.png" 
                  onerror="this.style.backgroundColor='#f8d7da'; this.style.opacity='0.8'; this.style.border='3px dashed red'; this.alt='Error: plantilla_bingo.png no encontrada. Asegúrate de subir tu diseño a la raíz del proyecto.'; this.title='Sube plantilla_bingo.png';" 
                  alt="Plantilla de Bingo Personalizada"
                  title="Plantilla de Bingo Personalizada">
 
 
-            <!-- 2. CONTENIDO GENERADO (SE SUPERPONE A LA IMAGEN) -->
             <div id="generated-content-wrapper">
 
-                <!-- ESPACIO PARA EL LOGO (Invisible) -->
-                <div class="sheet-header mb-4">
-                    [Este espacio es invisible, el logo debe estar en tu plantilla PNG]
-                </div>
+                <div class="sheet-header"></div>
     
-                <div class="multi-card-output" id="multi-card-output" data-sheet-id="0001">
-                    <!-- Las 4 cartas (solo IDs y Números) se insertarán aquí por JavaScript -->
-                </div>
+                <div class="multi-card-output" id="multi-card-output" data-sheet-id="0007">
+                    </div>
             </div>
         </div>
         
-        <!-- Botón de Descarga -->
         <div class="mt-6 text-center">
             <button id="btn-download-sheet" class="px-8 py-4 rounded-lg bg-green-600 text-white font-bold text-xl shadow-lg hover:bg-green-700 transition">
                 Descargar Planilla (PNG)
@@ -454,24 +384,12 @@
         
     </div>
     
-    <div class="max-w-4xl mx-auto p-6 mt-6 bg-blue-100 border-l-4 border-blue-500 text-blue-800 rounded-lg">
-        <p class="font-bold">¡Modo Plantilla Activado!</p>
-        <ol class="list-decimal list-inside mt-2 space-y-2 text-sm">
-            <li>
-                **Sube tu Diseño:** Este código espera que subas tu diseño de Graphionica como **<code class="font-mono">plantilla_bingo.png</code>** a la raíz de tu proyecto.
-            </li>
-            <li>
-                **Diseño 2x2:** Crea tu imagen PNG con el diseño de las 4 cartas, incluyendo el fondo, logo, y las letras BINGO. La proporción ideal para 700px de ancho es de **700px x 990px** para una relación A4.
-            </li>
-            <li>
-                **Alineación:** Si los números generados no caen exactamente donde quieres, ajusta el <code class="font-mono">padding</code> del elemento <code class="font-mono">#generated-content-wrapper</code> y <code class="font-mono">.high-res-capture #generated-content-wrapper</code> en la sección <code class="font-mono">style</code>.
-            </li>
-            <li>
-                **Edición de Color:** Si el color de los números (<code class="font-mono">#000000</code>) o la ID no contrasta bien con tu fondo, ajusta las variables <code class="font-mono">--card-number-color</code> y <code class="font-mono">--id-text-color</code> al inicio del CSS.
-            </li>
-        </ol>
+    <div class="max-w-4xl mx-auto p-6 mt-6 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg">
+        <p class="font-bold">✅ Alineación Mejorada</p>
+        <p class="text-sm mt-2">
+            He ajustado el **padding superior** a <code class="font-mono">295px</code> y modificado la posición de las etiquetas de ID para que la cuadrícula **encaje con precisión** en tu diseño de 4 cartas. ¡Los números también son **grandes y visibles**!
+        </p>
     </div>
 
 </body>
 </html>
-
