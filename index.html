@@ -45,9 +45,9 @@
             width: 100%;
             height: 100%;
             z-index: 10; 
-            /* !!! AJUSTE CLAVE DE ALINEACIÓN (Top Right Bottom Left) !!! 
-               Reducido a 220px para subir todo el bloque de cartas y alinear con el diseño de fondo. */
-            padding: 220px 40px 40px 40px; /* <--- AJUSTE CLAVE */
+            /* !!! AJUSTE CLAVE DE ALINEACIÓN FINAL !!! 
+               Reducido a 200px para subir el bloque y alinear con la banda BINGO superior. */
+            padding: 200px 40px 40px 40px; /* <--- VALOR CLAVE AJUSTADO A 200px */
             display: flex;
             flex-direction: column;
         }
@@ -62,7 +62,7 @@
         
         /* --- ESTILO DE CADA CARTA DENTRO DE LA PLANILLA --- */
         .single-card-box {
-            position: relative; /* Clave para posicionar ID de forma absoluta */
+            position: relative; 
             background-color: transparent; 
             border: none; 
             display: flex;
@@ -72,7 +72,7 @@
         /* --- CONTENEDOR DE ID (donde van los números 161, 162, etc.) --- */
         .card-id-wrapper {
             position: absolute; 
-            top: 5px;          /* <--- AJUSTADO para subirlo un poco más */
+            top: 5px;          
             left: 5px;          
             z-index: 15;        
             display: flex;
@@ -139,10 +139,10 @@
             height: 4243px !important; 
         }
 
-        /* !!! AJUSTE EN ALTA RESOLUCIÓN CORREGIDO !!! (Proporcional al ajuste de 220px) */
+        /* !!! AJUSTE EN ALTA RESOLUCIÓN FINAL !!! (Proporcional al ajuste de 200px) */
         .high-res-capture #generated-content-wrapper {
-             /* 945px (aprox) es el nuevo padding top */
-             padding: 945px 170px 170px 170px !important; /* <--- AJUSTE CLAVE HR A 945px */
+             /* 858px (aprox) = 200px * (4243/990) */
+             padding: 858px 170px 170px 170px !important; /* <--- VALOR CLAVE HR AJUSTADO A 858px */
         }
         
         .high-res-capture .bingo-cell {
@@ -150,7 +150,7 @@
         }
         
         .high-res-capture .card-id-wrapper {
-             top: 20px !important;    /* <--- AJUSTADO HR */
+             top: 20px !important;    
              left: 20px !important;   
              height: auto !important;
              transform: none !important; 
@@ -171,8 +171,8 @@
         const BINGO_RANGES = {
             B: [1, 15], I: [16, 30], N: [31, 45], G: [46, 60], O: [61, 75]
         };
-        let cardStartId = 177; // Inicializado con el valor de tu última imagen
-        let currentSheetId = 1; // Inicializado en 1
+        let cardStartId = 181; // Ajustado al valor de tu última captura
+        let currentSheetId = 1; 
 
         function generateColumnNumbers(min, max) {
             const range = Array.from({ length: max - min + 1 }, (_, i) => i + min);
@@ -350,7 +350,7 @@
             <label for="start-id-input" class="text-gray-700 font-medium">
                 Siguiente Carta N°:
             </label>
-            <input type="number" id="start-id-input" value="177" min="1"
+            <input type="number" id="start-id-input" value="181" min="1"
                    class="w-32 p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center">
             
             <button id="btn-generate-sheet" class="px-6 py-2 rounded-lg bg-indigo-600 text-white font-bold whitespace-nowrap shadow-md hover:bg-indigo-700 transition">
@@ -389,7 +389,7 @@
     <div class="max-w-4xl mx-auto p-6 mt-6 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg">
         <p class="font-bold">✅ Últimos Ajustes de Alineación Aplicados</p>
         <p class="text-sm mt-2">
-            He ajustado el **padding superior** a <code class="font-mono">220px</code> para mover las cartas más arriba, alineándolas con tu diseño. El código JavaScript de la lógica de bingo está **completo**.
+            He ajustado el **padding superior** a <code class="font-mono">200px</code> para subir las cartas. Esto debería alinearlas perfectamente con la banda BINGO de tu diseño.
         </p>
     </div>
 
