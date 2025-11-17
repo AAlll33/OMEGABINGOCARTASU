@@ -45,10 +45,9 @@
             width: 100%;
             height: 100%;
             z-index: 10; 
-            /* !!! AJUSTE CLAVE DE ALINEACIÓN CORREGIDO !!! 
-               275px BAJA el contenido para que las cartas comiencen donde termina el BINGO.
-            */
-            padding: 275px 40px 40px 40px; /* <--- AJUSTE CLAVE */
+            /* !!! AJUSTE CLAVE DE ALINEACIÓN (Top Right Bottom Left) !!! 
+               Reducido a 220px para subir todo el bloque de cartas y alinear con el diseño de fondo. */
+            padding: 220px 40px 40px 40px; /* <--- AJUSTE CLAVE */
             display: flex;
             flex-direction: column;
         }
@@ -72,16 +71,16 @@
 
         /* --- CONTENEDOR DE ID (donde van los números 161, 162, etc.) --- */
         .card-id-wrapper {
-            position: absolute; /* <--- CORREGIDO */
-            top: 10px;          /* <--- CORREGIDO: Posición del ID dentro de la caja de la carta */
-            left: 5px;          /* <--- CORREGIDO */
-            z-index: 15;        /* Asegura que esté por encima */
+            position: absolute; 
+            top: 5px;          /* <--- AJUSTADO para subirlo un poco más */
+            left: 5px;          
+            z-index: 15;        
             display: flex;
             justify-content: flex-start;
             align-items: center;
             height: auto;
             padding: 0;
-            transform: none; /* <--- CORREGIDO: Elimina transformación innecesaria */
+            transform: none; 
         }
 
         /* --- IDENTIFICADOR DE CARTA (137, 138, etc.) --- */
@@ -89,7 +88,7 @@
             color: var(--id-text-color);
             padding: 0.1rem 0.5rem;
             font-weight: 900; 
-            font-size: 1rem; /* Ligeramente más pequeño para encajar */
+            font-size: 1rem; 
             line-height: 1; 
             background-color: white; 
             border-radius: 0.3rem;
@@ -109,8 +108,7 @@
             grid-template-columns: repeat(5, 1fr);
             aspect-ratio: 1 / 1; 
             width: 100%;
-            /* Se elimina la transformación, la cuadrícula se posiciona correctamente después del header */
-            transform: none; /* <--- CORREGIDO */
+            transform: none; 
         }
         
         /* Estilo de cada celda de número */
@@ -141,10 +139,10 @@
             height: 4243px !important; 
         }
 
-        /* !!! AJUSTE EN ALTA RESOLUCIÓN CORREGIDO !!! (Proporcional al ajuste de 275px) */
+        /* !!! AJUSTE EN ALTA RESOLUCIÓN CORREGIDO !!! (Proporcional al ajuste de 220px) */
         .high-res-capture #generated-content-wrapper {
-             /* 1180px (aprox) es el nuevo padding top */
-             padding: 1180px 170px 170px 170px !important; /* <--- AJUSTE CLAVE HR */
+             /* 945px (aprox) es el nuevo padding top */
+             padding: 945px 170px 170px 170px !important; /* <--- AJUSTE CLAVE HR A 945px */
         }
         
         .high-res-capture .bingo-cell {
@@ -152,10 +150,10 @@
         }
         
         .high-res-capture .card-id-wrapper {
-             top: 40px !important;    /* <--- CORREGIDO HR */
-             left: 20px !important;   /* <--- CORREGIDO HR */
+             top: 20px !important;    /* <--- AJUSTADO HR */
+             left: 20px !important;   
              height: auto !important;
-             transform: none !important; /* <--- CORREGIDO HR */
+             transform: none !important; 
         }
         
         .high-res-capture .card-id-label {
@@ -163,18 +161,18 @@
         }
 
         .high-res-capture .bingo-grid {
-             transform: none !important; /* <--- CORREGIDO HR */
+             transform: none !important; 
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script>
-        // --- LÓGICA DE BINGO (SIN CAMBIOS) ---
+        // --- LÓGICA DE BINGO ---
 
         const BINGO_RANGES = {
             B: [1, 15], I: [16, 30], N: [31, 45], G: [46, 60], O: [61, 75]
         };
-        let cardStartId = 165; 
-        let currentSheetId = 7; 
+        let cardStartId = 177; // Inicializado con el valor de tu última imagen
+        let currentSheetId = 1; // Inicializado en 1
 
         function generateColumnNumbers(min, max) {
             const range = Array.from({ length: max - min + 1 }, (_, i) => i + min);
@@ -224,7 +222,7 @@
             const cardBox = document.createElement('div');
             cardBox.className = 'single-card-box';
 
-            // Contenedor de IDs (Posicionado Absoluto en el CSS)
+            // Contenedor de IDs
             const idWrapper = document.createElement('div');
             idWrapper.className = 'card-id-wrapper';
             
@@ -295,7 +293,6 @@
             
             try {
                 // 2. Capturar con html2canvas
-                // Usamos scale: 1 para HR ya que el contenedor ya está escalado a 3000px
                 const canvas = await html2canvas(sheetContainer, {
                     scale: 1, 
                     useCORS: true,
@@ -353,11 +350,11 @@
             <label for="start-id-input" class="text-gray-700 font-medium">
                 Siguiente Carta N°:
             </label>
-            <input type="number" id="start-id-input" value="165" min="1"
+            <input type="number" id="start-id-input" value="177" min="1"
                    class="w-32 p-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center">
             
             <button id="btn-generate-sheet" class="px-6 py-2 rounded-lg bg-indigo-600 text-white font-bold whitespace-nowrap shadow-md hover:bg-indigo-700 transition">
-                Generar Planilla N° <span id="sheet-id-number">0007</span>
+                Generar Planilla N° <span id="sheet-id-number">0001</span>
             </button>
         </div>
         
@@ -376,7 +373,7 @@
 
                 <div class="sheet-header"></div>
     
-                <div class="multi-card-output" id="multi-card-output" data-sheet-id="0007">
+                <div class="multi-card-output" id="multi-card-output" data-sheet-id="0001">
                     </div>
             </div>
         </div>
@@ -390,9 +387,9 @@
     </div>
     
     <div class="max-w-4xl mx-auto p-6 mt-6 bg-green-100 border-l-4 border-green-500 text-green-800 rounded-lg">
-        <p class="font-bold">✅ Alineación Mejorada</p>
+        <p class="font-bold">✅ Últimos Ajustes de Alineación Aplicados</p>
         <p class="text-sm mt-2">
-            He ajustado el **padding superior** a <code class="font-mono">275px</code> y corregido la posición de las etiquetas de ID para que la cuadrícula **encaje con precisión** en tu diseño de 4 cartas. Los números también están centrados correctamente.
+            He ajustado el **padding superior** a <code class="font-mono">220px</code> para mover las cartas más arriba, alineándolas con tu diseño. El código JavaScript de la lógica de bingo está **completo**.
         </p>
     </div>
 
